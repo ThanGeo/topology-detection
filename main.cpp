@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
     
 
-    while ((c = getopt(argc, argv, "n:fdez:cqp:?")) != -1)
+    while ((c = getopt(argc, argv, "n:fdoez:cqp:?")) != -1)
     {
         switch (c)
         {
@@ -110,6 +110,9 @@ int main(int argc, char **argv)
                 break;
             case 'e':
                 EXPERIMENTS = 1;
+                break;
+            case 'o':
+                OPTIMIZED_TOPOLOGICAL = 1;
                 break;
             default:
                 break;

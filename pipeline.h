@@ -199,7 +199,11 @@ void initialize(string &arg1, string &arg2){
                         refinement_function = &refinementWithIDs;
                 }else{
                         //no intermediate filter, so complete refinement
-                        refinement_function = &refinement_DE9IM_WithIDs;
+                        if (OPTIMIZED_TOPOLOGICAL) {
+                                refinement_function = &refinement_DE9IM_WithIDs_optimized;
+                        } else{
+                                refinement_function = &refinement_DE9IM_WithIDs;
+                        }
                 }
 
         }else{
@@ -219,7 +223,11 @@ void initialize(string &arg1, string &arg2){
                         refinement_function = &refinementWithIDs;
                 }else{
                         //no intermediate filter, so complete refinement
-                        refinement_function = &refinement_DE9IM_WithIDs;
+                        if (OPTIMIZED_TOPOLOGICAL) {
+                                refinement_function = &refinement_DE9IM_WithIDs_optimized;
+                        } else{
+                                refinement_function = &refinement_DE9IM_WithIDs;
+                        }
                 }
         }
         

@@ -9,6 +9,7 @@ int CALCULATE_INTERVALS = 0;
 int COMPRESSION = 0;
 int EXPERIMENTS = 0;
 int DIFF_GRANULARITY_FIXED = 0;
+int OPTIMIZED_TOPOLOGICAL = 0;
 
 uint DESIGNATED_ORDER;
 string selection_query_filename;

@@ -47,6 +47,7 @@ extern int CALCULATE_INTERVALS;
 extern int COMPRESSION;
 extern int EXPERIMENTS;
 extern int DIFF_GRANULARITY_FIXED;
+extern int OPTIMIZED_TOPOLOGICAL;
 
 extern string selection_query_filename;
 extern uint DESIGNATED_ORDER;
