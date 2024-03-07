@@ -6,3 +6,4 @@ log.txt
 APRIL/interval_data/*
 APRIL/*.o
 containers/*.o
+.vscode/
