@@ -13,17 +13,14 @@
 #include <math.h>
 #include <cmath>
 #include <ctime>
-#include <iomanip>
-#include <unistd.h>
-#include <inttypes.h>
+#include <bitset>
+#include <unordered_map>
 
 #include "containers.h"
+#include "dataset_data.h"
 
-#include "../libvbyte-master/vbyte.h"
-#include "../libvbyte-master/varintdecode.h"
 
 using namespace std;
 
-void intervalize(Polygon &pol);
-
-void compressLinestringCells(Polygon &pol);
+//offset map
+unordered_map<uint,unsigned long> loadOffsetMap(int flag);

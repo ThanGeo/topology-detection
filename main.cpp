@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
     
 
-    while ((c = getopt(argc, argv, "n:fdez:cqp:?")) != -1)
+    while ((c = getopt(argc, argv, "n:feqp:?")) != -1)
     {
         switch (c)
         {
@@ -89,24 +89,9 @@ int main(int argc, char **argv)
             case 'n':
                 // cout << "Selected " << atoi(optarg) << " partitions" << endl;
                 H = atoi(optarg);
-                break;  
-            case 'c':
-                CALCULATE_INTERVALS = 1;                
-                break;
-            case 'f':
-                INTERMEDIATE_FILTER = 1;                
                 break;
             case 'q':
                 REFINEMENT = 1;
-                break;
-            case 'd':
-                DESIGNATED_ORDER = atoi(optarg);
-                // cout << "Order for designated datasets (T3NA, O6_Oceania): " << DESIGNATED_ORDER << endl;
-                DIFF_GRANULARITY_FIXED = 1;
-                break;
-            case 'z':
-                // cout << "Compressed APRIL version." << endl;
-                COMPRESSION = 1;
                 break;
             case 'e':
                 EXPERIMENTS = 1;
@@ -205,27 +190,6 @@ int main(int argc, char **argv)
     fs_2d::single::PartitionTwoDimensional(R, S, pR, pS, pRA_size, pSA_size, pRB_size, pSB_size, pRC_size, pSC_size, pRD_size, pSD_size,runPlaneSweepOnX, runNumPartitionsPerRelation);
     fs_2d::single::sort::oneArray::SortYStartOneArray(pR, pS, pRB_size, pSB_size, pRC_size, pSC_size , pRD_size, pSD_size, runNumPartitions);
 
-    //if specified, create the intervals (partition has to be completed first in order to compute the raster sections)
-    if(CALCULATE_INTERVALS == 1){
-        initiateRasterIntervalsCreation(argument1, argument2);
-    }
-
-
-    // for(auto &sec : DATA_SPACE.sections){
-    //     cout << "section " << sec.sectionID << ": " << endl;
-    //     cout << "   interest area: " << sec.interestxMin << "," << sec.interestyMin << " and " << sec.interestxMax << "," << sec.interestyMax << endl;
-    //     cout << "   raster area: " << sec.rasterxMin << "," << sec.rasteryMin << " and " << sec.rasterxMax << "," << sec.rasteryMax << endl;
-    //     cout << "   object count R: " << sec.objectCountR << endl;
-    //     cout << "   object count S: " << sec.objectCountS << endl;
-    // }
-
-    //enable the intermediate filter if specified by the user, before begining the evaluation
-    if(INTERMEDIATE_FILTER == 1){
-        enableIntermediateFilter(argument1, argument2);
-    }
-
-
-
     if(EXPERIMENTS){
         //for time measuring, runs multiple iterations
         int totalIterations = 10;
@@ -273,6 +237,9 @@ int main(int argc, char **argv)
         saveStats(result, evaluationTotalTime,evaluationTotalTime - intermediateFilterTime - refinementTime, intermediateFilterTime, refinementTime);
 
     }
- 
+    
+    /* Clean up the global GEOS context */
+    finishGEOS();
+
     return 0;
 }

@@ -3,7 +3,6 @@ data/
 sj
 results_pairs.csv
 log.txt
-APRIL/interval_data/*
-APRIL/*.o
+topological/*.o
 containers/*.o
 .vscode/

@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <inttypes.h>
 
+#include "dataset_data.h"
 
 #ifdef __APPLE__
 

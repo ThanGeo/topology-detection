@@ -10,24 +10,24 @@ else
         CC      = g++
         CFLAGS  = -O3 -std=c++14 -w -fopenmp
         DEBUGCFLAGS  = -std=c++14 -w -fopenmp
-	VALGRINDCFLAGS  = -O0 -std=c++14 -w -fopenmp
-        LDFLAGS = 
+		VALGRINDCFLAGS  = -O0 -std=c++14 -w -fopenmp
+        LDFLAGS = -L/usr/local/lib/ -lgeos_c -I/usr/local/include/
 endif
 
 HEADERS= $(shell ls libvbyte-master/*h)
 
 #common
 COMPRESSION = libvbyte-master/vbyte.o libvbyte-master/varintdecode.o
-SOURCES = containers/relation.cpp $(shell ls APRIL/*cpp)
+SOURCES = containers/relation.cpp $(shell ls topological/*cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 
 all: main
 
 main: $(HEADERS) main.cpp $(OBJECTS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) $(COMPRESSION) main.cpp -o sj -Iinclude
+	$(CC) $(CFLAGS) $(OBJECTS) $(COMPRESSION) main.cpp -o sj $(LDFLAGS) 
 
 debug:  $(OBJECTS)
-	$(CC) -g $(DEBUGCFLAGS) $(LDFLAGS)  $(OBJECTS) $(COMPRESSION) main.cpp -o sj -Iinclude
+	$(CC) -g $(DEBUGCFLAGS) $(OBJECTS) $(COMPRESSION) main.cpp -o sj $(LDFLAGS)  
 
 valgrind: $(OBJECTS)
 	$(CC) -g $(VALGRINDCFLAGS) $(LDFLAGS)  $(OBJECTS) $(COMPRESSION) main.cpp -o sj -Iinclude
@@ -43,6 +43,6 @@ clean:
 	rm -rf algorithms/*.o
 	rm -rf partitioning/*.o
 	rm -rf scheduling/*.o
-	rm -rf APRIL/*.o
+	rm -rf topological/*.o
 	rm -rf opengl_rasterizer/*.o
 	rm -rf sj

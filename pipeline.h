@@ -25,7 +25,11 @@
 #include <dirent.h>
 #include <errno.h>
 
-#include "./APRIL/april-main.h"
+#include <stdarg.h> /* for va_list - GEOS */
+
+#include "topological/dataset_data.h"
+#include "topological/binary_files.h"
+#include "topological/join_geometry_refinement.h"
 
 using namespace std;
 
@@ -106,6 +110,14 @@ void saveResultPair(uint &idA, uint &idB){
 //
 //-----------------------------
 
+static void geos_msg_handler(const char* fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf (fmt, ap);
+    va_end(ap);
+}
+
 void initialize(string &arg1, string &arg2){
         string info_message = "";
         argument1 = arg1;
@@ -180,51 +192,15 @@ void initialize(string &arg1, string &arg2){
         info_message += "-Partitions: \t\t\t" + to_string(H) + "\n";
         info_message += "-Data: \t\t\t\tpolygon-polygon\n";
 
-        //set the join function (based on whether it has to join compressed APRIL intervals)        
-        if(COMPRESSION == 0){
-                info_message += "-Compression: \t\t\tno\n";
-                //UNCOMPRESSED APRIL
-                if(DIFF_GRANULARITY_FIXED){
-                        //DIFFERENT GRANULARITY
-                        info_message += "-Granularity: \t\t\t16-" + to_string(DESIGNATED_ORDER) + "\n";
-                }else{
-                        //SAME GRANULARITY
-                        create_topology_table_function_pointer = &create_topology_table_uncompressed;
-                        info_message += "-Granularity: \t\t\t16-16\n";
-                }
-
-                if(INTERMEDIATE_FILTER){
-                        //there is an intermediate filter, so perform cheaper refinement because we only need to 
-                        //      refine the meet and covered by relations
-                        refinement_function = &refinementWithIDs;
-                }else{
-                        //no intermediate filter, so complete refinement
-                        refinement_function = &refinement_DE9IM_WithIDs;
-                }
-
-        }else{
-                info_message += "-Compression: \t\t\tyes\n";
-                //COMPRESSED APRIL
-                if(DIFF_GRANULARITY_FIXED){
-                        //DIFFERENT GRANULARITY
-                        info_message += "-Granularity: \t\t\t16-" + to_string(DESIGNATED_ORDER) + "\n";
-                }else{
-                        //SAME GRANULARITY
-                        info_message += "-Granularity: \t\t\t16-16\n";
-                }
-
-                if(INTERMEDIATE_FILTER){
-                        //there is an intermediate filter, so perform cheaper refinement because we only need to 
-                        //      refine the meet and covered by relations
-                        refinement_function = &refinementWithIDs;
-                }else{
-                        //no intermediate filter, so complete refinement
-                        refinement_function = &refinement_DE9IM_WithIDs;
-                }
-        }
+        //no intermediate filter, so complete refinement
+        refinement_function = &refinement_GEOS_WithIDs;
         
         //set ID type
         setIDtype();
+
+        // initialize GEOS
+        /* Send notice and error messages to the terminal */
+        initGEOS(geos_msg_handler, geos_msg_handler);
 
         //reset result file
         ofstream fout(result_filename, fstream::out | ios_base::binary);
@@ -284,31 +260,6 @@ void initialize(string &arg1, string &arg2){
 
 //-----------------------------
 //
-//          ENABLERS
-//
-//-----------------------------
-
-void enableIntermediateFilter(string &argument1, string &argument2){        
-        rasterIntervalsR.argument = argument1;
-        rasterIntervalsR.letterID = "A";
-        rasterIntervalsS.argument = argument2;
-        rasterIntervalsS.letterID = "B";
-
-        cout << "Loading datasets' APRIL... " << endl;
-        loadApproximations(rasterIntervalsR, argument1, 0);
-        loadApproximations(rasterIntervalsS, argument2, 1);
-        cout << "Finished." << endl;
-}
-
-
-void initiateRasterIntervalsCreation(string &argument1, string &argument2){
-        // initializeRasterizationOnOpenGL();
-        createApproximations(argument1, 0);
-        createApproximations(argument2, 1);
-}
-
-//-----------------------------
-//
 //          CONNECTORS
 //
 //-----------------------------
@@ -319,54 +270,13 @@ void forwardCandidatePair(uint idA, uint idB){
         bool refFlag = false;
         int result=-1;
         postMBRCandidates++;
-        if(INTERMEDIATE_FILTER){
-                timing = omp_get_wtime();
-                //find common sections
-                vector<uint> commonSections = DATA_SPACE.getCommonSectionsIDOfObjects(idA, idB);
-                //check in each common section
-                for(auto &secID : commonSections){
-                        result = (*create_topology_table_function_pointer)(rasterIntervalsR.getPolygonByIDAndSection(secID, idA), rasterIntervalsS.getPolygonByIDAndSection(secID, idB));
-                        // if(result == EQUAL || result == R_COVERED_BY_S || result == S_COVERED_BY_R || result == MEET){
-                        if(result >= EQUAL){
-                                refFlag = true;
-                        }
-
-                        if(result == -1){
-                                //error
-                                cout << "Error for " << idA << "," << idB << ": could not identify topological relationship." << endl;
-                                exit(0);
-                        }
-
-                }
-                //if it isn't marked for refinement, return
-                if(!refFlag){
-                        //save result
-                        result_count_map.at(result) += 1;
-                        intermediateFilterTime += (omp_get_wtime() - timing);
-                        return;
-                }                           
-                intermediateFilterTime += (omp_get_wtime() - timing);
-        }
-
-
 
         refinementCandidates++;  
         if(REFINEMENT){
                 //needs refinement
                 timing = omp_get_wtime();
                 result = (*refinement_function)(idA, idB, offsetMapR, offsetMapS, finR, finS);
-               
-                // if(idA == 91682 && idB == 1562908){
-                //         cout << idA << " and " << idB << " result: " << result << endl;
-                //         exit(0);
-                // }
-
-                //to save on disk specific results
-                // if(result == S_INSIDE_R){
-                //         // cout << idA << " ref covered by " << idB << endl;
-                //         saveResultPair(idA, idB);
-                // }
-
+        
                 //save result
                 result_count_map.at(result) += 1;
 
