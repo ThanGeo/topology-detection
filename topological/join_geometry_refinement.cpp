@@ -18,9 +18,8 @@ vector<char*> coveredByMaskList = {
 				coveredbyMask4};
 char intersectsMask[] = "T********";
 
-GEOSGeometry* MakePoly(std::vector<double> const& xCoords, std::vector<double> const& yCoords)
+GEOSGeometry* MakeGEOSPolygon(std::vector<double> const& xCoords, std::vector<double> const& yCoords)
 {
-	
 	size_t seqSize = xCoords.size();
 	GEOSCoordSequence* seq = GEOSCoordSeq_copyFromArrays(
 			xCoords.data(),
@@ -31,7 +30,6 @@ GEOSGeometry* MakePoly(std::vector<double> const& xCoords, std::vector<double> c
 	
 	GEOSGeometry *ring = GEOSGeom_createLinearRing(seq);
 	GEOSGeometry *polygon = GEOSGeom_createPolygon(ring, NULL, 0);
-
 	return polygon;
 }
 
@@ -53,6 +51,8 @@ GEOSGeometry* loadPolygonGeometryGEOS(uint &recID, unordered_map<uint,unsigned l
 		fin.read((char*) &readID, sizeof(int));
 		//read vertex count
 		fin.read((char*) &vertexCount, sizeof(int));
+		x_coords.reserve(vertexCount);
+		y_coords.reserve(vertexCount);
 		for(int i=0; i<vertexCount; i++){
 			fin.read((char*) &x, sizeof(double));
 			fin.read((char*) &y, sizeof(double));
@@ -60,65 +60,9 @@ GEOSGeometry* loadPolygonGeometryGEOS(uint &recID, unordered_map<uint,unsigned l
 			y_coords.emplace_back(y);
 		}
 	}
-
-	GEOSGeometry* polygon = MakePoly(x_coords, y_coords);
+	GEOSGeometry* polygon = MakeGEOSPolygon(x_coords, y_coords);
 	return polygon;
 }
-
-int refinement_DE9IM_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS){
-	/*  BOOST GEOMETRY REFINEMENT TO DETECT TOPOLOGICAL RELATIONSHIP */
-	// polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
-	// polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
-
-    
-    //disjoint
-    // if(boost::geometry::relate(boostPolygonR, boostPolygonS, disjointMask)){
-    // 	return DISJOINT;
-    // }
-
-    // //equal
-    // if(boost::geometry::relate(boostPolygonR, boostPolygonS, equalMask)){
-    // 	return EQUAL;
-    // }
-
-    // //inside
-    // if(boost::geometry::relate(boostPolygonR, boostPolygonS, withinMask)){
-    // 	return R_INSIDE_S;
-    // }
-    // if(boost::geometry::relate(boostPolygonS, boostPolygonR, withinMask)){
-    // 	return S_INSIDE_R;
-    // }
-
-    // //covered by
-    // // if(boost::geometry::relate(boostPolygonR, boostPolygonS, coveredbyMask)){
-    // // 	return R_COVERED_BY_S;
-    // // }
-    // // if(boost::geometry::relate(boostPolygonS, boostPolygonR, coveredbyMask)){
-    // // 	return S_COVERED_BY_R;
-    // // }
-
-	// for(auto &it: coveredByMaskList){
-	// 	if(boost::geometry::relate(boostPolygonR, boostPolygonS, it)){
-    // 		return R_COVERED_BY_S;
-	// 	}
-	// 	if(boost::geometry::relate(boostPolygonS, boostPolygonR, it)){
-	// 		return S_COVERED_BY_R;
-	// 	}
-	// }
-
-    // //meet
-    // if(boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask1) || 
-    // 	boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask2) || 
-    // 	boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask3)){
-    // 	return MEET;
-    // }
-
-    // //else return overlap/intersects
-    // return OVERLAP;
-
-}
-
-
 
 int refinement_GEOS_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS){
 	// printf("Checking objects %d and %d \n", idA, idB);
@@ -168,11 +112,12 @@ int refinement_GEOS_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned lo
 			goto FREE_AND_EXIT;
 		}
 	}
-    // intersects (TODO: make just returning intersects instead of checking)
-    if (GEOSRelatePatternMatch(resRS, intersectsMask) == 1) {
-		returnRelation = OVERLAP;
-		goto FREE_AND_EXIT;
-    }
+    // // intersects
+    // if (GEOSRelatePatternMatch(resRS, intersectsMask) == 1) {
+	// 	returnRelation = OVERLAP;
+	// 	goto FREE_AND_EXIT;
+    // }
+	returnRelation = OVERLAP;
 	
 FREE_AND_EXIT:
 	GEOSGeom_destroy(geosPolygonR);
