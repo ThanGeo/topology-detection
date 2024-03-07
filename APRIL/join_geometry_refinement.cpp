@@ -15,6 +15,11 @@ boost::geometry::de9im::mask equalMask("T*F**FFF*");
 boost::geometry::de9im::mask disjointMask("FF*FF****"); 
 
 
+vector<boost::geometry::de9im::mask> coveredByMaskList = {boost::geometry::de9im::mask("T*F**F***"),
+				boost::geometry::de9im::mask("*TF**F***"),
+				boost::geometry::de9im::mask("**FT*F***"),
+				boost::geometry::de9im::mask("**F*TF***")};
+
 
 
 polygon loadPolygonGeometryBOOST(uint &recID, unordered_map<uint,unsigned long> &offsetMap, ifstream &fin){
@@ -114,12 +119,21 @@ int refinement_DE9IM_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned l
     }
 
     //covered by
-    if(boost::geometry::relate(boostPolygonR, boostPolygonS, coveredbyMask)){
-    	return R_COVERED_BY_S;
-    }
-    if(boost::geometry::relate(boostPolygonS, boostPolygonR, coveredbyMask)){
-    	return S_COVERED_BY_R;
-    }
+    // if(boost::geometry::relate(boostPolygonR, boostPolygonS, coveredbyMask)){
+    // 	return R_COVERED_BY_S;
+    // }
+    // if(boost::geometry::relate(boostPolygonS, boostPolygonR, coveredbyMask)){
+    // 	return S_COVERED_BY_R;
+    // }
+
+	for(auto &it: coveredByMaskList){
+		if(boost::geometry::relate(boostPolygonR, boostPolygonS, it)){
+    		return R_COVERED_BY_S;
+		}
+		if(boost::geometry::relate(boostPolygonS, boostPolygonR, it)){
+			return S_COVERED_BY_R;
+		}
+	}
 
     //meet
     if(boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask1) || 
@@ -128,7 +142,7 @@ int refinement_DE9IM_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned l
     	return MEET;
     }
 
-    //else return overlap
+    //else return overlap/intersects
     return OVERLAP;
 
 }
