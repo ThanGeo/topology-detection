@@ -325,14 +325,7 @@ void forwardCandidatePair(uint idA, uint idB){
                 vector<uint> commonSections = DATA_SPACE.getCommonSectionsIDOfObjects(idA, idB);
                 //check in each common section
                 for(auto &secID : commonSections){
-                        
-                        // if(idA == 91682 && idB == 1562908){
-                        //         // exit(0);                                
-                        // }
                         result = (*create_topology_table_function_pointer)(rasterIntervalsR.getPolygonByIDAndSection(secID, idA), rasterIntervalsS.getPolygonByIDAndSection(secID, idB));
-                                
-
-
                         // if(result == EQUAL || result == R_COVERED_BY_S || result == S_COVERED_BY_R || result == MEET){
                         if(result >= EQUAL){
                                 refFlag = true;
@@ -347,22 +340,8 @@ void forwardCandidatePair(uint idA, uint idB){
                 }
                 //if it isn't marked for refinement, return
                 if(!refFlag){
-
-                        //to save on disk specific results
-                        // if(result == S_INSIDE_R){
-                        //         saveResultPair(idA, idB);
-                        // }
-
-                                
-                        // if(idA == 91682 && idB == 1562908){
-                        //         cout << idA << " and " << idB << " result: " << result << endl;
-                        //         exit(0);
-                        // }
-
                         //save result
                         result_count_map.at(result) += 1;
-
-
                         intermediateFilterTime += (omp_get_wtime() - timing);
                         return;
                 }                           

@@ -5,6 +5,12 @@
 boost::geometry::de9im::mask withinMask("T*F*FF***"); 
 // a covered by b
 boost::geometry::de9im::mask coveredbyMask("**F*TF***"); 
+vector<boost::geometry::de9im::mask> coveredByMaskList = {
+				boost::geometry::de9im::mask("T*F**F***"),
+				boost::geometry::de9im::mask("*TF**F***"),
+				boost::geometry::de9im::mask("**FT*F***"),
+				boost::geometry::de9im::mask("**F*TF***")};
+
 // a and b meet
 boost::geometry::de9im::mask meetMask1("FT*******"); 
 boost::geometry::de9im::mask meetMask2("F**T*****"); 
@@ -15,10 +21,6 @@ boost::geometry::de9im::mask equalMask("T*F**FFF*");
 boost::geometry::de9im::mask disjointMask("FF*FF****"); 
 
 
-vector<boost::geometry::de9im::mask> coveredByMaskList = {boost::geometry::de9im::mask("T*F**F***"),
-				boost::geometry::de9im::mask("*TF**F***"),
-				boost::geometry::de9im::mask("**FT*F***"),
-				boost::geometry::de9im::mask("**F*TF***")};
 
 
 
@@ -73,21 +75,27 @@ int refinementWithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned long> &o
     }
 
 	//covered by
-    if(boost::geometry::relate(boostPolygonR, boostPolygonS, coveredbyMask)){
-    	return R_COVERED_BY_S;
-    }
-    if(boost::geometry::relate(boostPolygonS, boostPolygonR, coveredbyMask)){
-    	return S_COVERED_BY_R;
-    }
+    // if(boost::geometry::relate(boostPolygonR, boostPolygonS, coveredbyMask)){
+    // 	return R_COVERED_BY_S;
+    // }
+    // if(boost::geometry::relate(boostPolygonS, boostPolygonR, coveredbyMask)){
+    // 	return S_COVERED_BY_R;
+    // }
+	for(auto &it: coveredByMaskList){
+		if(boost::geometry::relate(boostPolygonR, boostPolygonS, it)){
+    		return R_COVERED_BY_S;
+		}
+		if(boost::geometry::relate(boostPolygonS, boostPolygonR, it)){
+			return S_COVERED_BY_R;
+		}
+	}
 
 	//meet
     if(boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask1) || 
     	boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask2) || 
     	boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask3)){
     	return MEET;
-    }
-
-    
+    }    
 
     //else return overlap
     return OVERLAP;   

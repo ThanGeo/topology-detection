@@ -66,14 +66,25 @@ extern uint DATA_TYPE;
 extern uint HILBERT_n;
 
 //TOPOLOGY RELATED
-#define DISJOINT 0
-#define OVERLAP 1
-#define R_INSIDE_S 2
-#define S_INSIDE_R 3
-#define EQUAL 4
-#define R_COVERED_BY_S 5
-#define S_COVERED_BY_R 6
-#define MEET 7
+// #define DISJOINT 0
+// #define OVERLAP 1
+// #define R_INSIDE_S 2
+// #define S_INSIDE_R 3
+// #define EQUAL 4
+// #define R_COVERED_BY_S 5
+// #define S_COVERED_BY_R 6
+// #define MEET 7
+
+enum{
+	DISJOINT = 0,
+	OVERLAP,
+	R_INSIDE_S,
+	S_INSIDE_R,
+	EQUAL,
+	R_COVERED_BY_S,
+	S_COVERED_BY_R,
+	MEET,
+};
 
 // #define E 1e-08	//error margin
 #define DECIMAL_POINTS_PRECISION 6
