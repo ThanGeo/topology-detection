@@ -57,57 +57,6 @@ static polygon loadPolygonGeometryBOOST(uint &recID, unordered_map<uint,unsigned
 	return pol;
 }
 
-int refinementWithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS){
-	/*  BOOST GEOMETRY REFINEMENT TO CLEAR IF TOPOLOGICAL RELATIONSHIP IS INDEED MEET OR COVERED BY*/
-	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
-	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
-
-	//equal
-    if(boost::geometry::relate(boostPolygonR, boostPolygonS, equalMask)){
-    	return EQUAL;
-    }
-
-    //disjoint
-    if(boost::geometry::relate(boostPolygonR, boostPolygonS, disjointMask)){
-    	return DISJOINT;
-    }
-
-	//inside
-    if(boost::geometry::relate(boostPolygonR, boostPolygonS, withinMask)){
-    	return R_INSIDE_S;
-    }
-    if(boost::geometry::relate(boostPolygonS, boostPolygonR, withinMask)){
-    	return S_INSIDE_R;
-    }
-
-	//covered by
-    // if(boost::geometry::relate(boostPolygonR, boostPolygonS, coveredbyMask)){
-    // 	return R_COVERED_BY_S;
-    // }
-    // if(boost::geometry::relate(boostPolygonS, boostPolygonR, coveredbyMask)){
-    // 	return S_COVERED_BY_R;
-    // }
-	for(auto &it: coveredByMaskList){
-		if(boost::geometry::relate(boostPolygonR, boostPolygonS, it)){
-    		return R_COVERED_BY_S;
-		}
-		if(boost::geometry::relate(boostPolygonS, boostPolygonR, it)){
-			return S_COVERED_BY_R;
-		}
-	}
-
-	//meet
-    if(boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask1) || 
-    	boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask2) || 
-    	boost::geometry::relate(boostPolygonR, boostPolygonS, meetMask3)){
-    	return MEET;
-    }    
-
-    //else return overlap
-    return OVERLAP;   
-}
-
-
 int refinement_DE9IM_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS){
 	/*  BOOST GEOMETRY REFINEMENT TO DETECT TOPOLOGICAL RELATIONSHIP */
 	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);

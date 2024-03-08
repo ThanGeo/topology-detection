@@ -194,9 +194,12 @@ void initialize(string &arg1, string &arg2){
                 }
 
                 if(INTERMEDIATE_FILTER){
-                        //there is an intermediate filter, so perform cheaper refinement because we only need to 
-                        //      refine the meet and covered by relations
-                        refinement_function = &refinementWithIDs;
+                        //there is an intermediate filter
+                        if (OPTIMIZED_TOPOLOGICAL) {
+                                refinement_function = &refinement_DE9IM_WithIDs_optimized;
+                        } else{
+                                refinement_function = &refinement_DE9IM_WithIDs;
+                        }
                 }else{
                         //no intermediate filter, so complete refinement
                         if (OPTIMIZED_TOPOLOGICAL) {
@@ -218,9 +221,12 @@ void initialize(string &arg1, string &arg2){
                 }
 
                 if(INTERMEDIATE_FILTER){
-                        //there is an intermediate filter, so perform cheaper refinement because we only need to 
-                        //      refine the meet and covered by relations
-                        refinement_function = &refinementWithIDs;
+                        //there is an intermediate filter
+                        if (OPTIMIZED_TOPOLOGICAL) {
+                                refinement_function = &refinement_DE9IM_WithIDs_optimized;
+                        } else{
+                                refinement_function = &refinement_DE9IM_WithIDs;
+                        }
                 }else{
                         //no intermediate filter, so complete refinement
                         if (OPTIMIZED_TOPOLOGICAL) {
@@ -363,17 +369,6 @@ void forwardCandidatePair(uint idA, uint idB){
                 //needs refinement
                 timing = omp_get_wtime();
                 result = (*refinement_function)(idA, idB, offsetMapR, offsetMapS, finR, finS);
-               
-                // if(idA == 91682 && idB == 1562908){
-                //         cout << idA << " and " << idB << " result: " << result << endl;
-                //         exit(0);
-                // }
-
-                //to save on disk specific results
-                // if(result == S_INSIDE_R){
-                //         // cout << idA << " ref covered by " << idB << endl;
-                //         saveResultPair(idA, idB);
-                // }
 
                 //save result
                 result_count_map.at(result) += 1;
