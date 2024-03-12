@@ -150,7 +150,6 @@ extern void d2xy(ID n, ID d, ID &x, ID &y);
 
 
 extern void setIDtype();
-extern void printContainer(uint8_t *container, uint &totalBytes);
 extern void printAvailablePredicates();
 
 /*

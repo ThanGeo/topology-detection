@@ -81,21 +81,6 @@ void setIDtype(){
 	}
 }
 
-
-void printContainer(uint8_t *container, uint &totalBytes){
-	cout << "CONTAINER:" << endl;
-	for(int i = 0; i<totalBytes; i++){
-		printf(""BYTE_TO_BINARY_PATTERN" ",BYTE_TO_BINARY(container[i]));
-		if((i+1) % 4 == 0){
-
-			cout << endl;
-		}
-	}
-	cout << endl;
-}
-
-
-
 // rotate/flip a quadrant appropriately
 inline void rot(ID n, ID &x, ID &y, ID rx, ID ry) {
     if (ry == 0) {
