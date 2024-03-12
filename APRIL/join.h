@@ -1,4 +1,5 @@
-#pragma once
+#ifndef JOIN_H
+#define JOIN_H
 
 #include <time.h>
 #include <stdio.h>
@@ -37,3 +38,8 @@ using namespace std;
 
 
 int compareIntervals(vector<ID> &ar1, uint &numintervals1, vector<ID> &ar2, uint &numintervals2);
+int compareIntervalsForIntersection(vector<ID> &ar1, uint &numintervals1, vector<ID> &ar2, uint &numintervals2);
+
+
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APRIL_H
+#define APRIL_H
 
 #include <time.h>
 #include <stdio.h>
@@ -30,3 +31,6 @@ using namespace std;
 void createApproximations(string argument, int flag);
 
 void loadApproximations(Dataset &dataset, string argument, int flag);
+
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BINARY_H
+#define BINARY_H
 
 #include <time.h>
 #include <stdio.h>
@@ -50,3 +51,6 @@ void saveBinaryIntervalsUncompressed(Polygon &pol, uint &sectionID, ofstream &fo
 
 void loadAprilCompressed(Dataset &set, string argument, int flag);
 void loadAprilUncompressed(Dataset &set, string argument, int flag);
+
+
+#endif

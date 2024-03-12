@@ -10,6 +10,10 @@ char meetCode2[] = "F**T*****";
 char meetCode3[] = "F***T****"; 
 char equalCode[] = "T*F**FFF*"; 
 char disjointCode[] = "FF*FF****";
+char overlapCode1[] = "T********";
+char overlapCode2[] = "*T*******";
+char overlapCode3[] = "***T*****";
+char overlapCode4[] = "****T****";
 
 //define topological masks for refinement
 // a within b
@@ -29,6 +33,12 @@ boost::geometry::de9im::mask meetMask3(meetCode3);
 boost::geometry::de9im::mask equalMask(equalCode); 
 // a and b are disjoint
 boost::geometry::de9im::mask disjointMask(disjointCode); 
+// a overlaps b
+vector<boost::geometry::de9im::mask> overlapMaskList = {
+				boost::geometry::de9im::mask(overlapCode1),
+				boost::geometry::de9im::mask(overlapCode2),
+				boost::geometry::de9im::mask(overlapCode3),
+				boost::geometry::de9im::mask(overlapCode4)};
 
 static polygon loadPolygonGeometryBOOST(uint &recID, unordered_map<uint,unsigned long> &offsetMap, ifstream &fin){
 	polygon pol;
@@ -75,10 +85,10 @@ int refinement_DE9IM_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned l
 
     //inside
     if(boost::geometry::relate(boostPolygonR, boostPolygonS, withinMask)){
-    	return R_INSIDE_S;
+    	return R_CONTAINED_IN_S;
     }
     if(boost::geometry::relate(boostPolygonS, boostPolygonR, withinMask)){
-    	return S_INSIDE_R;
+    	return R_CONTAINS_S;
     }
 
     //covered by
@@ -86,7 +96,7 @@ int refinement_DE9IM_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned l
     // 	return R_COVERED_BY_S;
     // }
     // if(boost::geometry::relate(boostPolygonS, boostPolygonR, coveredbyMask)){
-    // 	return S_COVERED_BY_R;
+    // 	return R_COVERS_S;
     // }
 
 	for(auto &it: coveredByMaskList){
@@ -94,7 +104,7 @@ int refinement_DE9IM_WithIDs(uint &idA, uint &idB, unordered_map<uint,unsigned l
     		return R_COVERED_BY_S;
 		}
 		if(boost::geometry::relate(boostPolygonS, boostPolygonR, it)){
-			return S_COVERED_BY_R;
+			return R_COVERS_S;
 		}
 	}
 
@@ -136,15 +146,21 @@ static bool compareMasks(std::string &de9imCode, char* maskCode) {
 	return true;
 }
 
-int refinement_DE9IM_WithIDs_optimized(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS){
-	/*  BOOST GEOMETRY REFINEMENT TO DETECT TOPOLOGICAL RELATIONSHIP */
-	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
-	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
-	
+static void createMaskCodes(polygon &boostPolygonR, polygon &boostPolygonS, std::string &codeRS, std::string &codeSR) {
 	boost::geometry::de9im::matrix matrixRS = boost::geometry::relation(boostPolygonR, boostPolygonS);
 	boost::geometry::de9im::matrix matrixSR = boost::geometry::relation(boostPolygonS, boostPolygonR);
-    std::string codeRS = matrixRS.str();
-    std::string codeSR = matrixSR.str();
+   	codeRS = matrixRS.str();
+    codeSR = matrixSR.str();
+}
+
+int refinementAllTopologyRelations(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS){
+	/*  BOOST GEOMETRY REFINEMENT TO DETECT TOPOLOGICAL RELATIONSHIP */
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
     
     //disjoint
 	if(compareMasks(codeRS, disjointCode)){
@@ -158,10 +174,10 @@ int refinement_DE9IM_WithIDs_optimized(uint &idA, uint &idB, unordered_map<uint,
 
     //inside
 	if(compareMasks(codeRS, withinCode)){
-    	return R_INSIDE_S;
+    	return R_CONTAINED_IN_S;
     }
 	if(compareMasks(codeSR, withinCode)){
-    	return S_INSIDE_R;
+    	return R_CONTAINS_S;
     }
 
     //covered by
@@ -175,7 +191,7 @@ int refinement_DE9IM_WithIDs_optimized(uint &idA, uint &idB, unordered_map<uint,
 				compareMasks(codeSR, coveredbyCode2) || 
 				compareMasks(codeSR, coveredbyCode3) || 
 				compareMasks(codeSR, coveredbyCode4)){
-		return S_COVERED_BY_R;
+		return R_COVERS_S;
 	}
 
     //meet
@@ -189,3 +205,124 @@ int refinement_DE9IM_WithIDs_optimized(uint &idA, uint &idB, unordered_map<uint,
     return OVERLAP;
 
 }
+
+
+int refinementDisjoint(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
+	// compare masks
+	if(compareMasks(codeRS, disjointCode)){
+    	return 1;
+    }
+	return 0;
+}
+int refinementEqual(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
+	// compare masks
+	if(compareMasks(codeRS, equalCode)){
+    	return 1;
+    }
+	return 0;
+}
+int refinementOverlap(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
+	// compare masks
+	if(compareMasks(codeSR, overlapCode1) || 
+				compareMasks(codeSR, overlapCode2) || 
+				compareMasks(codeSR, overlapCode3) || 
+				compareMasks(codeSR, overlapCode4)){
+		return 1;
+	}
+	return 0;
+}
+int refinementMeet(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
+	// compare masks
+	if(compareMasks(codeRS, meetCode1) || 
+				compareMasks(codeRS, meetCode2) || 
+				compareMasks(codeRS, meetCode3)){
+		return 1;
+	}
+	return 0;
+}
+int refinementCrosses(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// todo
+}
+int refinementRcoversS(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
+	// compare masks
+	if(compareMasks(codeSR, coveredbyCode1) || 
+				compareMasks(codeSR, coveredbyCode2) || 
+				compareMasks(codeSR, coveredbyCode3) || 
+				compareMasks(codeSR, coveredbyCode4)){
+		return 1;
+	}
+	return 0;
+}
+int refinementRcoveredByS(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
+	// compare masks
+	if(compareMasks(codeRS, coveredbyCode1) || 
+				compareMasks(codeRS, coveredbyCode2) || 
+				compareMasks(codeRS, coveredbyCode3) || 
+				compareMasks(codeRS, coveredbyCode4)){
+		return 1;
+	}
+	return 0;
+}
+int refinementRcontainsS(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
+	// compare masks
+	if(compareMasks(codeSR, withinCode)){
+		return 1;
+	}
+	return 0;
+}
+int refinementRcontainedInS(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS) {
+	// load boost polygons
+	polygon boostPolygonR = loadPolygonGeometryBOOST(idA, offsetMapR, finR);
+	polygon boostPolygonS = loadPolygonGeometryBOOST(idB, offsetMapS, finS);
+    std::string codeRS,codeSR;
+	// get the mask codes
+	createMaskCodes(boostPolygonR, boostPolygonS, codeRS, codeSR);
+	// compare masks
+	if(compareMasks(codeRS, withinCode)){
+		return 1;
+	}
+	return 0;
+}
+

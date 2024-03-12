@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONTAINERS_H
+#define CONTAINERS_H
 
 #include <time.h>
 #include <stdio.h>
@@ -47,7 +48,6 @@ extern int CALCULATE_INTERVALS;
 extern int COMPRESSION;
 extern int EXPERIMENTS;
 extern int DIFF_GRANULARITY_FIXED;
-extern int OPTIMIZED_TOPOLOGICAL;
 
 extern string selection_query_filename;
 extern uint DESIGNATED_ORDER;
@@ -69,23 +69,31 @@ extern uint HILBERT_n;
 //TOPOLOGY RELATED
 // #define DISJOINT 0
 // #define OVERLAP 1
-// #define R_INSIDE_S 2
-// #define S_INSIDE_R 3
+// #define R_CONTAINED_IN_S 2
+// #define R_CONTAINS_S 3
 // #define EQUAL 4
 // #define R_COVERED_BY_S 5
-// #define S_COVERED_BY_R 6
+// #define R_COVERS_S 6
 // #define MEET 7
 
-enum{
+typedef enum{
 	DISJOINT = 0,
 	OVERLAP,
-	R_INSIDE_S,
-	S_INSIDE_R,
+	R_CONTAINED_IN_S,
+	R_CONTAINS_S,
+	CROSSES,
 	EQUAL,
 	R_COVERED_BY_S,
-	S_COVERED_BY_R,
+	R_COVERS_S,
 	MEET,
-};
+	// find all relations: none predicate
+	NONE = 1000, 
+}PredicateE;
+
+extern unordered_map<string,PredicateE> predicateMapStringToInt;
+
+extern PredicateE TOPOLOGY_PREDICATE;
+extern std::string g_specifiedTopology;
 
 // #define E 1e-08	//error margin
 #define DECIMAL_POINTS_PRECISION 6
@@ -143,6 +151,7 @@ extern void d2xy(ID n, ID d, ID &x, ID &y);
 
 extern void setIDtype();
 extern void printContainer(uint8_t *container, uint &totalBytes);
+extern void printAvailablePredicates();
 
 /*
 *-------------------------------------------------------
@@ -366,3 +375,6 @@ extern Dataset geometryDatasetA;
 extern Dataset geometryDatasetB;
 
 extern DataSpace DATA_SPACE;
+
+
+#endif CONTAINERS_H

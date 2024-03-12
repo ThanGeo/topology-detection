@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DATASET_H
+#define DATASET_H
 
 #include <time.h>
 #include <stdio.h>
@@ -34,3 +35,6 @@ string getOffsetMap(int flag);
 void getUniversalCoordinates(int setcode);
 
 void buildFilePaths(string &argument1, string &argument2);
+
+
+#endif

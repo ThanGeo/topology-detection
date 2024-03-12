@@ -17,6 +17,24 @@ void toLowercase(char *buf){
     }
 }
 
+void printAllRelationsResults() {
+    cout << "----- Topology Results (# of pairs) -----\t" << endl;
+    cout << "Disjoint: \t\t" << result_count_map.at(DISJOINT) << endl;
+    cout << "Equal: \t\t\t" << result_count_map.at(EQUAL) << endl;
+    cout << "Overlap (intersect): \t" << result_count_map.at(OVERLAP) << endl;
+    cout << "R covered_by S: \t" << result_count_map.at(R_COVERED_BY_S) << endl;
+    cout << "R covers S: \t\t" << result_count_map.at(R_COVERS_S) << endl;
+    cout << "R contained_in S: \t" << result_count_map.at(R_CONTAINED_IN_S) << endl;
+    cout << "R contains S: \t\t" << result_count_map.at(R_CONTAINS_S) << endl;
+    cout << "Meet (adjacent): \t" << result_count_map.at(MEET) << endl;
+    cout << "Crosses: \t\t" << result_count_map.at(CROSSES) << "(NOT YET IMPLEMENTED)" << endl;
+}
+
+void printSpecificRelationResults() {
+    cout << "----- Topology Results (# of pairs) -----\t" << endl;
+    cout << g_specifiedTopology << ": \t" << result_count_map.at(TOPOLOGY_PREDICATE) << endl;
+}
+
 void saveStats(unsigned long long &result, double totalTime, double MBRFTime, double IFtime, double REFTime){
     //print total results
     cout << "Total time: \t\t\t\t\t\t" << totalTime << " sec." << endl;
@@ -26,26 +44,38 @@ void saveStats(unsigned long long &result, double totalTime, double MBRFTime, do
 
     cout << "***************************************************" << endl;
     
+    cout << "\t-Post-filter pairs: \t\t\t\t" << postMBRCandidates << " pairs." << endl;
     if(REFINEMENT){
         cout << "\t-Refinement Candidates: \t\t\t" << refinementCandidates << " pairs." << endl;
     }
 
     cout << "***************************************************" << endl;
 
-    cout << "----- Results -----\t" << endl;
-    cout << "Disjoint pairs: \t" << result_count_map.at(DISJOINT) << endl;
-    cout << "Equal pairs: \t\t" << result_count_map.at(EQUAL) << endl;
-    cout << "Overlap pairs: \t\t" << result_count_map.at(OVERLAP) << endl;
-    cout << "R covered by S pairs: \t" << result_count_map.at(R_COVERED_BY_S) << endl;
-    cout << "S covered by R pairs: \t" << result_count_map.at(S_COVERED_BY_R) << endl;
-    cout << "R inside S pairs: \t" << result_count_map.at(R_INSIDE_S) << endl;
-    cout << "S inside R pairs: \t" << result_count_map.at(S_INSIDE_R) << endl;
-    cout << "Meet (adjacent) pairs: \t" << result_count_map.at(MEET) << endl;
+    if (TOPOLOGY_PREDICATE == NONE) {
+        printAllRelationsResults();
+    } else {
+        printSpecificRelationResults();
+    }
     
     if(INTERMEDIATE_FILTER == 0){
         
     }
     // cout << "***************************************************" << endl;
+}
+
+
+
+static void verifyTopologicalPredicate(char* pred) {
+    std::string predStr(pred);
+    auto it = predicateMapStringToInt.find(predStr);
+    if (it == predicateMapStringToInt.end()) {
+        // k2 exists in unordered_map for key k1
+        fprintf(stderr, "Error: unknown predicate. Choose one from: ");
+        printAvailablePredicates();
+        exit(-1);
+    }
+    TOPOLOGY_PREDICATE = (*it).second;
+    g_specifiedTopology = predStr;
 }
 
 int main(int argc, char **argv)
@@ -77,9 +107,7 @@ int main(int argc, char **argv)
     string argument1(argv[argc-2]);
     string argument2(argv[argc-1]);
 
-    
-
-    while ((c = getopt(argc, argv, "n:fdoez:cqp:?")) != -1)
+    while ((c = getopt(argc, argv, "n:fdt:ez:cqp:?")) != -1)
     {
         switch (c)
         {
@@ -111,22 +139,24 @@ int main(int argc, char **argv)
             case 'e':
                 EXPERIMENTS = 1;
                 break;
-            case 'o':
-                OPTIMIZED_TOPOLOGICAL = 1;
+            case 't':
+                verifyTopologicalPredicate(strdup(optarg));
                 break;
             default:
+                cout << "Error with program arguments." << endl;
+                exit(-1);
                 break;
         }
     }
 
     if(DIFF_GRANULARITY_FIXED && (argument2 != "T3NA" && argument2 != "O6_Oceania")){
         cout << "Error: designated order " << DESIGNATED_ORDER << " not implemented for datasets other than T3NA,O6_Oceania." << endl;
-        exit(1);
+        exit(-1);
     }
 
     if(DIFF_GRANULARITY_FIXED && (DESIGNATED_ORDER < 8 || DESIGNATED_ORDER > 15)){
         cout << "Error: designated order for the rasterization of the " << argument2 << " dataset can only be a value in the [8,15] range (16 is default without the -d command)" << endl;
-        exit(1);
+        exit(-1);
     }
 
     //initialize
@@ -136,17 +166,19 @@ int main(int argc, char **argv)
     cout << "***************************************************" << endl;
     cout << "Initializing MBR-join... " << endl;
     // Load inputs (creates MBRs from geometry files)
-    #pragma omp parallel sections
-    {
-        #pragma omp section
-        {
-            R.load(getBinaryGeometryFilename(0));
-        }
-        #pragma omp section
-        {
-            S.load(getBinaryGeometryFilename(1));
-        }
-    }
+    // #pragma omp parallel sections
+    // {
+    //     #pragma omp section
+    //     {
+    //         R.load(getBinaryGeometryFilename(0));
+    //     }
+    //     #pragma omp section
+    //     {
+    //         S.load(getBinaryGeometryFilename(1));
+    //     }
+    // }
+    R.load(getBinaryGeometryFilename(0));
+    S.load(getBinaryGeometryFilename(1));
     cout << "Finished: sizes ";
     cout << R.size() << " (" << argument1 << ") & " << S.size() << " (" << argument2 << ") objects in the datasets." << endl;
 

@@ -9,7 +9,21 @@ int CALCULATE_INTERVALS = 0;
 int COMPRESSION = 0;
 int EXPERIMENTS = 0;
 int DIFF_GRANULARITY_FIXED = 0;
-int OPTIMIZED_TOPOLOGICAL = 0;
+
+unordered_map<string,PredicateE> predicateMapStringToInt = {{"disjoint",DISJOINT},
+									{"equal",EQUAL},
+									{"contained_in",R_CONTAINED_IN_S},
+									{"contains",R_CONTAINS_S},
+									{"covered_by",R_COVERED_BY_S},
+									{"covers", R_COVERS_S},
+									{"intersect",OVERLAP},
+									{"meet",MEET},
+									{"crosses",CROSSES},
+									};
+
+PredicateE TOPOLOGY_PREDICATE = NONE;
+std::string g_specifiedTopology = "all";
+
 
 uint DESIGNATED_ORDER;
 string selection_query_filename;
@@ -41,6 +55,17 @@ double mbrToPolygonPercentage = 0.5;
 int VAR_TYPE;
 
 unordered_map<int,int> result_count_map;
+
+void printAvailablePredicates(){
+	auto it = predicateMapStringToInt.begin();
+	printf("{'%s'", (*it).first.c_str());
+	it++;
+	while(it != predicateMapStringToInt.end()){
+		printf(", '%s'", (*it).first.c_str());
+		it++;
+	}
+	printf("}\n");
+}
 
 void setIDtype(){
 	if(HILBERT_n > 65536){
@@ -404,6 +429,9 @@ vector<Section> DataSpace::getSectionsOfMBR(double &xMin, double &yMin, double &
 vector<uint> DataSpace::getCommonSectionsIDOfObjects(uint &idA, uint &idB){
 	auto itR = objectMapR.find(idA);
 	auto itS = objectMapS.find(idB);
+	if(itR == objectMapR.end() || itS == objectMapS.end()) {
+		fprintf(stderr, "Error: %u or %u doesn't exist in any section\n", idA, idB);
+	}
 	vector<uint> commonSectionIDs;
 	set_intersection(itR->second.begin(),itR->second.end(),itS->second.begin(),itS->second.end(),back_inserter(commonSectionIDs));
 	return commonSectionIDs;

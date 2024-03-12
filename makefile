@@ -8,9 +8,9 @@ ifeq ($(OS),Darwin)
         LDFLAGS = -L/usr/local/opt/libomp/lib -L/usr/local/lib/
 else
         CC      = g++
-        CFLAGS  = -O3 -std=c++14 -w -fopenmp
-        DEBUGCFLAGS  = -std=c++14 -w -fopenmp
-	VALGRINDCFLAGS  = -O0 -std=c++14 -w -fopenmp
+        CFLAGS  = -std=c++14 -w -fopenmp
+		DEBUG_FLAGS =
+		VALGRINDCFLAGS  = -O0 -std=c++14 -w -fopenmp
         LDFLAGS = 
 endif
 
@@ -21,22 +21,24 @@ COMPRESSION = libvbyte-master/vbyte.o libvbyte-master/varintdecode.o
 SOURCES = containers/relation.cpp $(shell ls APRIL/*cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 
+all: CFLAGS += -O3
 all: main
 
-main: $(HEADERS) main.cpp $(OBJECTS)
+main: $(OBJECTS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) $(COMPRESSION) main.cpp -o sj -Iinclude
 
-debug:  $(OBJECTS)
-	$(CC) -g $(DEBUGCFLAGS) $(LDFLAGS)  $(OBJECTS) $(COMPRESSION) main.cpp -o sj -Iinclude
+debug:	DEBUG_FLAGS += -g
+debug: $(OBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) $(COMPRESSION) main.cpp -o sj -Iinclude
 
 valgrind: $(OBJECTS)
-	$(CC) -g $(VALGRINDCFLAGS) $(LDFLAGS)  $(OBJECTS) $(COMPRESSION) main.cpp -o sj -Iinclude
+	$(CC) -g $(VALGRINDCFLAGS) $(LDFLAGS) $(OBJECTS) $(COMPRESSION) main.cpp -o sj -Iinclude
 
 .cpp.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -c $< -o $@
 
 .cc.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -c $< -o $@
 
 clean:
 	rm -rf containers/*.o
@@ -46,3 +48,4 @@ clean:
 	rm -rf APRIL/*.o
 	rm -rf opengl_rasterizer/*.o
 	rm -rf sj
+	rm -rf *.o

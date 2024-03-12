@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/sj",
+            "args": ["-p","1000","-f","-q","-t","equal","T1NA","T2NA"],
+            // "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [{ "name": "config", "value": "Debug" }],
+            // "externalConsole": true,
+            "MIMode": "gdb",
+            // "setupCommands": [
+            //     {
+            //         "description": "Enable pretty-printing for gdb",
+            //         "text": "-enable-pretty-printing",
+            //         "ignoreFailures": true
+            //     }
+            // ],
+            // "preLaunchTask": "build_task",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}

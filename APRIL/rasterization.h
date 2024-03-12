@@ -1,4 +1,5 @@
-#pragma once 
+#ifndef RASTERIZATION_H
+#define RASTERIZATION_H
 
 #include <time.h>
 #include <stdio.h>
@@ -33,3 +34,7 @@ void rasterizeSimple(Polygon &pol, Section &sec);
 
 void rasterizeSimpleLinestring(Polygon &pol, Section &sec);
 void rasterizeAndIntervalizeNoFloodFill(Polygon &pol, Section &sec);
+
+
+
+#endif

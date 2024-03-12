@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INTERVALIZATION_H
+#define INTERVALIZATION_H
 
 #include <time.h>
 #include <stdio.h>
@@ -27,3 +28,5 @@ using namespace std;
 void intervalize(Polygon &pol);
 
 void compressLinestringCells(Polygon &pol);
+
+#endif

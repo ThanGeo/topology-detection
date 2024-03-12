@@ -73,6 +73,59 @@ int compareIntervalsWithin(vector<ID> &ar1, uint &numintervals1, vector<ID> &ar2
 	return 1;
 }
 
+int compareIntervalsForIntersection(vector<ID> &ar1, uint &numintervals1, vector<ID> &ar2, uint &numintervals2){
+	//they may not have any intervals of this type
+	if(numintervals1 == 0 || numintervals2 == 0){
+		return 0;
+	}
+	
+	// ID st1,st2,end1,end2;
+	uint cur1=0;
+	uint cur2=0;
+	
+	auto st1 = ar1.begin();
+	auto end1 = ar1.begin() + 1;
+    cur1++;
+    
+	auto st2 = ar2.begin();
+	auto end2 = ar2.begin() + 1;
+    cur2++;
+
+    do {
+		if (*st1<=*st2)
+		{
+			if (*end1>*st2) // overlap, end1>=st2 if intervals are [s,e] and end1>st2 if intervals are [s,e)
+			{
+				//they overlap, return 1
+				return 1;
+			}	
+			else
+			{
+				st1 += 2;
+				end1 += 2;
+				cur1++;
+			}
+		}
+		else // st2<st1
+		{
+			if (*end2>*st1) // overlap, end2>=st1 if intervals are [s,e] and end2>st1 if intervals are [s,e)
+			{
+
+				//they overlap, return 1
+				return 1;
+			}
+			else
+			{
+				st2 += 2;
+				end2 += 2;
+				cur2++;
+			}
+		}
+	} while(cur1<=numintervals1 && cur2<=numintervals2);
+	
+	//no overlap, return 0
+	return 0;
+}
 
 /*
 *	
@@ -265,3 +318,5 @@ int compareIntervals(vector<ID> &ar1, uint &numintervals1, vector<ID> &ar2, uint
 	//else they intersect at least once
 	return 1;
 }
+
+
