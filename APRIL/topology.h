@@ -11,20 +11,25 @@
 
 using namespace std;
 
-extern int (*checkPredicateFunctionPtr)(int AA, int AF, int FA, int FF);
 
-extern int checkAllRelations(Polygon *polA, Polygon *polB);
-extern int checkSpecificRelation(Polygon *polA, Polygon *polB);
+enum {
+	REF_MARKED,
+	REF_UNMARKED,
+	REF_BLOCKED
+};
+
+extern int findRelationUsingAPRIL(Polygon *polA, Polygon *polB, bool &markedForEqual);
+extern int checkAllRelations_old(Polygon *polA, Polygon *polB);
 
 // topology check functions
-int checkTopologyDisjoint(int AA, int AF, int FA, int FF);
-int checkTopologyEqual(int AA, int AF, int FA, int FF);
-int checkTopologyRContainedInS(int AA, int AF, int FA, int FF);
-int checkTopologyRContainsS(int AA, int AF, int FA, int FF);
-int checkTopologyRCoveredByS(int AA, int AF, int FA, int FF);
-int checkTopologyRCoversS(int AA, int AF, int FA, int FF);
-int checkTopologyCrosses(int AA, int AF, int FA, int FF);
-int checkTopologyMeet(int AA, int AF, int FA, int FF);
+int checkTopologyDisjoint(Polygon *polA, Polygon *polB);
+int checkTopologyEqual(Polygon *polA, Polygon *polB);
+int checkTopologyRwithinS(Polygon *polA, Polygon *polB);
+int checkTopologyRContainsS(Polygon *polA, Polygon *polB);
+int checkTopologyRCoveredByS(Polygon *polA, Polygon *polB);
+int checkTopologyRCoversS(Polygon *polA, Polygon *polB);
+int checkTopologyCrosses(Polygon *polA, Polygon *polB);
+int checkTopologyMeet(Polygon *polA, Polygon *polB);
 
 int checkTopologyIntersects(Polygon *polA, Polygon *polB);   //todo: use normal april here instead of this?
 

@@ -20,14 +20,32 @@ void toLowercase(char *buf){
 void printAllRelationsResults() {
     cout << "----- Topology Results (# of pairs) -----\t" << endl;
     cout << "Disjoint: \t\t" << result_count_map.at(DISJOINT) << endl;
-    cout << "Equal: \t\t\t" << result_count_map.at(EQUAL) << endl;
-    cout << "Overlap (intersect): \t" << result_count_map.at(OVERLAP) << endl;
-    cout << "R covered_by S: \t" << result_count_map.at(R_COVERED_BY_S) << endl;
-    cout << "R covers S: \t\t" << result_count_map.at(R_COVERS_S) << endl;
-    cout << "R contained_in S: \t" << result_count_map.at(R_CONTAINED_IN_S) << endl;
-    cout << "R contains S: \t\t" << result_count_map.at(R_CONTAINS_S) << endl;
-    cout << "Meet (adjacent): \t" << result_count_map.at(MEET) << endl;
-    cout << "Crosses: \t\t" << result_count_map.at(CROSSES) << "(NOT YET IMPLEMENTED)" << endl;
+    
+    uint totalCovers = result_count_map.at(CONTAINS) + result_count_map.at(EQUAL);
+    uint totalCoveredBy = result_count_map.at(WITHIN) + result_count_map.at(EQUAL);
+    uint totalIntersects = result_count_map.at(INTERSECT) + result_count_map.at(MEET) + 
+        result_count_map.at(CONTAINS) + result_count_map.at(WITHIN) + 
+        result_count_map.at(R_COVERS_S) + result_count_map.at(R_COVERED_BY_S) + 
+        result_count_map.at(EQUAL);
+
+    cout << "Intersect: \t\t" << totalIntersects << endl;
+    cout << "   Meet: \t\t" << result_count_map.at(MEET) << endl;
+    cout << "   Equal: \t\t" << result_count_map.at(EQUAL) << endl;
+    cout << "   Covers: \t\t" << totalCovers << endl;
+    cout << "       Contains: \t" << result_count_map.at(CONTAINS) << endl;
+    cout << "   Covered by: \t\t" << totalCoveredBy << endl;
+    cout << "       Within: \t\t" << result_count_map.at(WITHIN) << endl;
+    // cout << "Crosses: \t\t" << result_count_map.at(CROSSES) << "(NOT YET IMPLEMENTED)" << endl;
+
+    cout << "-------- ACTUAL VALUES --------\n" << endl;
+    cout << "Disjoint: \t\t" << result_count_map.at(DISJOINT) << endl;
+    cout << "Intersect: \t\t" << result_count_map.at(INTERSECT) << endl;
+    cout << "   Meet: \t\t" << result_count_map.at(MEET) << endl;
+    cout << "   Equal: \t\t" << result_count_map.at(EQUAL) << endl;
+    cout << "   Covers: \t\t" << result_count_map.at(R_COVERS_S) << endl;
+    cout << "       Contains: \t" << result_count_map.at(CONTAINS) << endl;
+    cout << "   Covered by: \t\t" << result_count_map.at(R_COVERED_BY_S) << endl;
+    cout << "       Within: \t\t" << result_count_map.at(WITHIN) << endl;
 }
 
 void printSpecificRelationResults() {
@@ -46,12 +64,13 @@ void saveStats(unsigned long long &result, double totalTime, double MBRFTime, do
     
     cout << "\t-Post-filter pairs: \t\t\t\t" << postMBRCandidates << " pairs." << endl;
     if(REFINEMENT){
-        cout << "\t-Refinement Candidates: \t\t\t" << refinementCandidates << " pairs." << endl;
+        double refCandPerc = refinementCandidates / (double) postMBRCandidates * 100;
+        printf("\t-Refinement Candidates: \t\t\t%d pairs. (%0.2f\%)\n", refinementCandidates, refCandPerc);
     }
 
     cout << "***************************************************" << endl;
 
-    if (TOPOLOGY_PREDICATE == NONE) {
+    if (TOPOLOGY_PREDICATE == UNDEFINED_PRED) {
         printAllRelationsResults();
     } else {
         printSpecificRelationResults();

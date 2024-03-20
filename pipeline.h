@@ -54,10 +54,10 @@ int postMBRCandidates = 0;
 int refinementCandidates = 0;
 
 clock_t timer;
-
+// gateway
+void (*gateway_topology_function_ptr)(uint &idA, uint &idB);
 int (*find_relation_function_ptr)(Polygon *polA, Polygon *polB);
-int (*refinement_function_ptr)(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS);
-void (*main_topology_function_ptr)(uint &idA, uint &idB);
+bool (*refinement_function_ptr)(uint &idA, uint &idB, unordered_map<uint,unsigned long> &offsetMapR, unordered_map<uint,unsigned long> &offsetMapS, ifstream &finR, ifstream &finS);
 
 //-----------------------------
 //
@@ -69,12 +69,12 @@ void initTopologyResultMap() {
         result_count_map.clear();
 
         result_count_map.insert(make_pair<int,int>(DISJOINT, 0));
-        result_count_map.insert(make_pair<int,int>(OVERLAP, 0));
+        result_count_map.insert(make_pair<int,int>(INTERSECT, 0));
         result_count_map.insert(make_pair<int,int>(EQUAL, 0));
         result_count_map.insert(make_pair<int,int>(R_COVERED_BY_S, 0));
         result_count_map.insert(make_pair<int,int>(R_COVERS_S, 0));
-        result_count_map.insert(make_pair<int,int>(R_CONTAINED_IN_S, 0));
-        result_count_map.insert(make_pair<int,int>(R_CONTAINS_S, 0));
+        result_count_map.insert(make_pair<int,int>(WITHIN, 0));
+        result_count_map.insert(make_pair<int,int>(CONTAINS, 0));
         result_count_map.insert(make_pair<int,int>(MEET, 0));
         result_count_map.insert(make_pair<int,int>(CROSSES, 0));
 }
@@ -114,10 +114,28 @@ void saveResultPair(uint &idA, uint &idB){
 //
 //-----------------------------
 
-void gatewayAllRelations(uint &idA, uint &idB) {
+void gatewayAllRelationsRefinementOnly(uint &idA, uint &idB) {
         double timing;
         bool refFlag = false;
         int result=-1;
+        postMBRCandidates++;
+        refinementCandidates++;  
+        if(REFINEMENT){
+                //refinement
+                timing = omp_get_wtime();
+                result = refinementAllTopologyRelations(idA, idB, offsetMapR, offsetMapS, finR, finS, true);
+                
+                //save result
+                result_count_map.at(result) += 1;
+                refinementTime += (omp_get_wtime() - timing);
+        }
+}
+
+void gatewayAllRelationsAPRIL(uint &idA, uint &idB) {
+        double timing;
+        bool refFlag = false;
+        int result=-1;
+        bool markedForEqual = false;
         postMBRCandidates++;
         if(INTERMEDIATE_FILTER){
                 timing = omp_get_wtime();
@@ -125,39 +143,87 @@ void gatewayAllRelations(uint &idA, uint &idB) {
                 vector<uint> commonSections = DATA_SPACE.getCommonSectionsIDOfObjects(idA, idB);
                 //check in each common section
                 for(auto &secID : commonSections){
-                        result = (*find_relation_function_ptr)(rasterIntervalsR.getPolygonByIDAndSection(secID, idA), rasterIntervalsS.getPolygonByIDAndSection(secID, idB));
-                        // if(result == EQUAL || result == R_COVERED_BY_S || result == R_COVERS_S || result == MEET){
-                        if(result >= EQUAL){
-                                refFlag = true;
+                        result = findRelationUsingAPRIL(rasterIntervalsR.getPolygonByIDAndSection(secID, idA), rasterIntervalsS.getPolygonByIDAndSection(secID, idB), markedForEqual);
+                        
+                        // IF WE IDENTIFIED A TRUE HIT
+                        if(result < UNDEFINED_PRED) {
+                                result_count_map.at(result) += 1;
+                                intermediateFilterTime += (omp_get_wtime() - timing);
+                                return;
                         }
-                        if(result == -1){
-                                //error
-                                cout << "Error for " << idA << "," << idB << ": could not identify topological relationship." << endl;
-                                exit(0);
-                        }
-
-                }
-                //if it isn't marked for refinement, return
-                if(!refFlag){
-                        //save result
-                        result_count_map.at(result) += 1;
-                        intermediateFilterTime += (omp_get_wtime() - timing);
-                        return;
-                }                           
+                }                    
                 intermediateFilterTime += (omp_get_wtime() - timing);
         }
         refinementCandidates++;  
         if(REFINEMENT){
-                //needs refinement
+                //refinement
                 timing = omp_get_wtime();
-                result = (*refinement_function_ptr)(idA, idB, offsetMapR, offsetMapS, finR, finS);
-
-                //save result
-                result_count_map.at(result) += 1;
-
+                switch (result) {
+                        // REFINEMENT 1 - all cases 
+                        case REFINE_ALL:
+                                result = refinementAllTopologyRelations(idA, idB, offsetMapR, offsetMapS, finR, finS, markedForEqual);
+                                //save result
+                                result_count_map.at(result) += 1;
+                                break;
+                        
+                        // REFINEMENT 2 - no disjoint/meet
+                        case REFINE_CONTAINMENT:
+                                result = refinementContainmentPostAPRIL(idA, idB, offsetMapR, offsetMapS, finR, finS, markedForEqual);
+                                result_count_map.at(result) += 1;
+                                break;
+                        // REFINEMENT 3 - no containment, only disjoint/equal/meet/intersect
+                        case REFINE_NO_CONTAINMENT:
+                                result = refinementNoContainmentPostAPRIL(idA, idB, offsetMapR, offsetMapS, finR, finS, markedForEqual);
+                                //save result
+                                result_count_map.at(result) += 1;
+                                break;
+                        // REFINEMENT 4 - either equal (if marked) or definitely true hit intersect
+                        case REFINE_EQUAL_INTERSECT:
+                                if (markedForEqual) {
+                                        if (refinementEqual(idA, idB, offsetMapR, offsetMapS, finR, finS)) { 
+                                                result_count_map.at(EQUAL) += 1;
+                                        } else {
+                                                result_count_map.at(INTERSECT) += 1;
+                                        }
+                                } else {
+                                        result_count_map.at(INTERSECT) += 1;
+                                }
+                                break;
+                        // SPECIAL REFINEMENT CONTAIN/EQUAL
+                        case REFINE_EQUAL_POST_CONTAIN:
+                                // printf("Contain: Equal refinement result: %d\n",refinementEqual(idA, idB, offsetMapR, offsetMapS, finR, finS));
+                                if (refinementEqual(idA, idB, offsetMapR, offsetMapS, finR, finS)) { 
+                                        result_count_map.at(EQUAL) += 1;
+                                } else {
+                                        result_count_map.at(CONTAINS) += 1;
+                                }
+                                break;
+                        // SPECIAL REFINEMENT WITHIN/EQUAL
+                        case REFINE_EQUAL_POST_WITHIN:
+                                // printf("Within Equal refinement result: %d\n",refinementEqual(idA, idB, offsetMapR, offsetMapS, finR, finS));
+                                if (refinementEqual(idA, idB, offsetMapR, offsetMapS, finR, finS)) { 
+                                        result_count_map.at(EQUAL) += 1;
+                                } else {
+                                        result_count_map.at(WITHIN) += 1;
+                                }
+                                break;
+                        case REFINE_CONTAINS_PLUS:
+                                result = refinementContainsPlusPostAPRIL(idA, idB, offsetMapR, offsetMapS, finR, finS, markedForEqual);
+                                //save result
+                                result_count_map.at(result) += 1;
+                                break;
+                        
+                        case REFINE_WITHIN_PLUS:
+                                result = refinementWithinPlusPostAPRIL(idA, idB, offsetMapR, offsetMapS, finR, finS, markedForEqual);
+                                //save result
+                                result_count_map.at(result) += 1;
+                                break;
+                }
+                
                 refinementTime += (omp_get_wtime() - timing);
         }
 }
+
 
 void gatewaySpecificRelation(uint &idA, uint &idB) {
         double timing;
@@ -171,13 +237,8 @@ void gatewaySpecificRelation(uint &idA, uint &idB) {
                 // cout << commonSections.size() << " common sections." << endl;
                 //check in each common section
                 for(auto &secID : commonSections){
-                        /**
-                         * -1 : error
-                         * 0 : true negative
-                         * 1 : true positive
-                         * 2 : inconclusive (needs refinement)
-                        */        
                         result = (*find_relation_function_ptr)(rasterIntervalsR.getPolygonByIDAndSection(secID, idA), rasterIntervalsS.getPolygonByIDAndSection(secID, idB));
+                        
                         if(result == -1){
                                 //error
                                 cout << "Error for " << idA << "," << idB << ": could not identify topological relationship." << endl;
@@ -185,12 +246,12 @@ void gatewaySpecificRelation(uint &idA, uint &idB) {
                         }
                 }
                 //if it isn't marked for refinement, return
-                if(result == 1){
+                if(result == TRUE_HIT){
                         //equal, save result
                         result_count_map.at(TOPOLOGY_PREDICATE) += 1;
                         intermediateFilterTime += (omp_get_wtime() - timing);
                         return;
-                } else if (result == 0) {
+                } else if (result == TRUE_NEGATIVE) {
                         // not equal
                         intermediateFilterTime += (omp_get_wtime() - timing);
                         return;
@@ -199,11 +260,12 @@ void gatewaySpecificRelation(uint &idA, uint &idB) {
         }
         refinementCandidates++;  
         if(REFINEMENT){
+                printf("ref candidate\n");
                 //needs refinement
                 timing = omp_get_wtime();
                 result = (*refinement_function_ptr)(idA, idB, offsetMapR, offsetMapS, finR, finS);
                 //save result
-                if (result == 1) {
+                if (result == TRUE_HIT) {
                         result_count_map.at(TOPOLOGY_PREDICATE) += 1;
                 }
                 refinementTime += (omp_get_wtime() - timing);
@@ -217,57 +279,60 @@ void gatewaySpecificRelation(uint &idA, uint &idB) {
 //-----------------------------
 
 void setTopologyFunctions() {
-        if (TOPOLOGY_PREDICATE == NONE) {
+        if (TOPOLOGY_PREDICATE == UNDEFINED_PRED) {
                 /**
                  * ALL RELATIONS
                 */
-                find_relation_function_ptr = &checkAllRelations;
-                main_topology_function_ptr = &gatewayAllRelations;
-                refinement_function_ptr = &refinementAllTopologyRelations;
+               if (INTERMEDIATE_FILTER) {
+                        gateway_topology_function_ptr = &gatewayAllRelationsAPRIL;
+                        refinement_function_ptr = NULL;         // hardcoded in gateway func
+               }else {
+                        gateway_topology_function_ptr = &gatewayAllRelationsRefinementOnly;
+                        refinement_function_ptr = NULL;         // hardcoded in gateway func
+               }
                 return;
         }
         /**
          * A SINGLE SPECIFIC RELATION
         */
 
-        find_relation_function_ptr = &checkSpecificRelation;
-        main_topology_function_ptr = &gatewaySpecificRelation;
+        gateway_topology_function_ptr = &gatewaySpecificRelation;
         switch (TOPOLOGY_PREDICATE) {
                 case DISJOINT:
-                        checkPredicateFunctionPtr = &checkTopologyDisjoint;
+                        find_relation_function_ptr = &checkTopologyDisjoint;
                         refinement_function_ptr = &refinementDisjoint;
                         break;
                 case EQUAL:
-                        checkPredicateFunctionPtr = &checkTopologyEqual;
+                        find_relation_function_ptr = &checkTopologyEqual;
                         refinement_function_ptr = &refinementEqual;
                         break;
-                case OVERLAP:
+                case INTERSECT:
                         // Use regular APRIL for this instead of the matrix, override find_relation_function
                         find_relation_function_ptr = &checkTopologyIntersects;
-                        refinement_function_ptr = &refinementOverlap;
+                        refinement_function_ptr = &refinementIntersect;
                         break;
                 case MEET:
-                        checkPredicateFunctionPtr = &checkTopologyMeet;
+                        find_relation_function_ptr = &checkTopologyMeet;
                         refinement_function_ptr = &refinementMeet;
                         break;
                 case CROSSES:
-                        checkPredicateFunctionPtr = &checkTopologyCrosses;
+                        find_relation_function_ptr = &checkTopologyCrosses;
                         refinement_function_ptr = &refinementCrosses;
                         break;
-                case R_CONTAINED_IN_S:
-                        checkPredicateFunctionPtr = &checkTopologyRContainedInS;
-                        refinement_function_ptr = &refinementRcontainedInS;
+                case WITHIN:
+                        find_relation_function_ptr = &checkTopologyRwithinS;
+                        refinement_function_ptr = &refinementRwithinS;
                         break;
-                case R_CONTAINS_S:
-                        checkPredicateFunctionPtr = &checkTopologyRContainsS;
+                case CONTAINS:
+                        find_relation_function_ptr = &checkTopologyRContainsS;
                         refinement_function_ptr = &refinementRcontainsS;
                         break;
                 case R_COVERED_BY_S:
-                        checkPredicateFunctionPtr = &checkTopologyRCoveredByS;
+                        find_relation_function_ptr = &checkTopologyRCoveredByS;
                         refinement_function_ptr = &refinementRcoveredByS;
                         break;
                 case R_COVERS_S:
-                        checkPredicateFunctionPtr = &checkTopologyRCoversS;
+                        find_relation_function_ptr = &checkTopologyRCoversS;
                         refinement_function_ptr = &refinementRcoversS;
                         break;
         }
@@ -456,7 +521,7 @@ void initiateRasterIntervalsCreation(string &argument1, string &argument2){
 
 void forwardCandidatePair(uint idA, uint idB){
         
-        (*main_topology_function_ptr)(idA, idB);
+        (*gateway_topology_function_ptr)(idA, idB);
 }
 
 #endif

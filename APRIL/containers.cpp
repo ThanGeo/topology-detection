@@ -12,16 +12,16 @@ int DIFF_GRANULARITY_FIXED = 0;
 
 unordered_map<string,PredicateE> predicateMapStringToInt = {{"disjoint",DISJOINT},
 									{"equal",EQUAL},
-									{"contained_in",R_CONTAINED_IN_S},
-									{"contains",R_CONTAINS_S},
+									{"within",WITHIN},
+									{"contains",CONTAINS},
 									{"covered_by",R_COVERED_BY_S},
 									{"covers", R_COVERS_S},
-									{"intersect",OVERLAP},
+									{"intersect",INTERSECT},
 									{"meet",MEET},
 									{"crosses",CROSSES},
 									};
 
-PredicateE TOPOLOGY_PREDICATE = NONE;
+PredicateE TOPOLOGY_PREDICATE = UNDEFINED_PRED;
 std::string g_specifiedTopology = "all";
 
 

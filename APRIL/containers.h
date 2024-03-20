@@ -68,9 +68,9 @@ extern uint HILBERT_n;
 
 //TOPOLOGY RELATED
 // #define DISJOINT 0
-// #define OVERLAP 1
-// #define R_CONTAINED_IN_S 2
-// #define R_CONTAINS_S 3
+// #define INTERSECT 1
+// #define WITHIN 2
+// #define CONTAINS 3
 // #define EQUAL 4
 // #define R_COVERED_BY_S 5
 // #define R_COVERS_S 6
@@ -78,17 +78,32 @@ extern uint HILBERT_n;
 
 typedef enum{
 	DISJOINT = 0,
-	OVERLAP,
-	R_CONTAINED_IN_S,
-	R_CONTAINS_S,
+	INTERSECT,
+	WITHIN,
+	CONTAINS,
 	CROSSES,
 	EQUAL,
 	R_COVERED_BY_S,
 	R_COVERS_S,
 	MEET,
-	// find all relations: none predicate
-	NONE = 1000, 
+	// find all relations == undefined predicate
+	UNDEFINED_PRED = 1000,
+	// REFINEMENT SCENARIOS BASED ON PREDICATES
+	REFINE_EQUAL_INTERSECT,
+	REFINE_NO_CONTAINMENT,
+	REFINE_EQUAL_POST_CONTAIN,
+	REFINE_EQUAL_POST_WITHIN,
+	REFINE_CONTAINMENT,
+	REFINE_ALL,
+	REFINE_CONTAINS_PLUS,
+	REFINE_WITHIN_PLUS,
 }PredicateE;
+
+enum {
+	TRUE_NEGATIVE,
+	TRUE_HIT,
+	INCONCLUSIVE
+};
 
 extern unordered_map<string,PredicateE> predicateMapStringToInt;
 
