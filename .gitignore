@@ -1,8 +1,6 @@
-script-output/
-data/
-sj
-results_pairs.csv
-log.txt
-APRIL/interval_data/*
-APRIL/*.o
-containers/*.o
+build/
+data/APRIL/
+data/scalability_tests/
+data/vector_data/*.dat
+.vscode/
+experiment_results/
