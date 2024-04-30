@@ -42,6 +42,9 @@ void log_task(std::string text);
 void log_task_w_text(std::string text, std::string txt);
 void success_text(char* text);
 void success_text_with_number(char* text, int number);
+void success_text_with_text_and_number(char* text, std::string &extra_text, int number);
+void success_text_with_double_and_unit(char *text, double val, std::string unit);
+void success_text_with_percentage(char *text, double perc);
 void success_text_with_time(char* text, double seconds);
 
 /**

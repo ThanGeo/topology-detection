@@ -53,6 +53,11 @@ static void exportCSV() {
     foutCSV.close();
 }
 
+static void printAnalysis() {
+    success_text_with_double_and_unit("Throughput", (double) spatial_lib::g_queryOutput.postMBRFilterCandidates / spatial_lib::g_queryOutput.totalTime, "pairs/sec");
+    success_text_with_percentage("Inconclusive pairs (% of MBR candidates)", spatial_lib::g_queryOutput.refinementCandidates / (double) spatial_lib::g_queryOutput.postMBRFilterCandidates * 100);
+}
+
 static void printResults(int runTimes) {
     spatial_lib::g_queryOutput.queryResults += spatial_lib::g_queryOutput.trueHits;
     printf("Query '%s' on datasets %s and %s:\n",spatial_lib::queryTypeIntToText(g_config.queryData.type).c_str(), g_config.queryData.R.nickname.c_str(),g_config.queryData.S.nickname.c_str());
@@ -134,7 +139,7 @@ int main(int argc, char *argv[]) {
     double iFilterTime = 0;
     double refinementTime = 0;
     for (int i=0; i<runTimes; i++) {
-        log_task_w_text("Running iteration ", std::to_string(i+1));
+        // log_task_w_text("Running iteration ", std::to_string(i+1));
         // reset
         spatial_lib::resetQueryOutput();
         
@@ -154,7 +159,9 @@ int main(int argc, char *argv[]) {
     spatial_lib::g_queryOutput.refinementTime = refinementTime / (double) runTimes;
 
     // print results
-    printResults(runTimes);
+    // printResults(runTimes);
+
+    printAnalysis();
 
     // output to CSV
     if (g_config.actions.exportCSV) {
@@ -164,6 +171,6 @@ int main(int argc, char *argv[]) {
     // free any memory
     freeMemory();
 
-    success_text("Finished successfuly");
+    // success_text("Finished successfuly!");
     return 0;
 }

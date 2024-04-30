@@ -563,7 +563,7 @@ namespace APRIL
             // time 
             spatial_lib::time::markiFilterTimer();
             // count post mbr candidate
-            spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
+            // spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
             
             // if (idR == 220594 && idS == 357429) {
             // if (idR == 206434 && idS == 9173759) {
@@ -938,7 +938,7 @@ namespace APRIL
             // }
 
             // count post mbr candidate
-            spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
+            // spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
             // use appropriate query function
             switch (g_query->type) {
                 case spatial_lib::Q_INTERSECT:
@@ -1282,7 +1282,7 @@ namespace APRIL
             spatial_lib::time::markiFilterTimer();
 
             // count post mbr candidate
-            spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
+            // spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
             // use appropriate query function
             switch (relationCase) {
                 case spatial_lib::MBR_R_IN_S:
@@ -1624,7 +1624,7 @@ namespace APRIL
             spatial_lib::time::markiFilterTimer();
 
             // count post mbr candidate
-            spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
+            // spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
             // use appropriate query function
             switch (relationCase) {
                 case spatial_lib::MBR_R_IN_S:

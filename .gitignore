@@ -4,3 +4,4 @@ data/scalability_tests/
 data/vector_data/*.dat
 .vscode/
 experiment_results/
+dump.txt

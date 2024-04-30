@@ -467,7 +467,7 @@ namespace spatial_lib
         // time
         time::markRefinementFilterTimer();
         // count post mbr candidate
-        g_queryOutput.postMBRFilterCandidates += 1;
+        // g_queryOutput.postMBRFilterCandidates += 1;
         g_queryOutput.refinementCandidates += 1;
         
         switch(g_queryType) {
@@ -784,7 +784,7 @@ namespace spatial_lib
         // time
         time::markRefinementFilterTimer();
         // count post mbr candidate
-        g_queryOutput.postMBRFilterCandidates += 1;
+        // g_queryOutput.postMBRFilterCandidates += 1;
         g_queryOutput.refinementCandidates += 1;
         
         int refinementResult;
@@ -821,7 +821,7 @@ namespace spatial_lib
             // time
             time::markRefinementFilterTimer();
             // count post mbr candidate
-            g_queryOutput.postMBRFilterCandidates += 1;
+            // g_queryOutput.postMBRFilterCandidates += 1;
             g_queryOutput.refinementCandidates += 1;
 
             // get bucket

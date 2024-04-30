@@ -16,6 +16,7 @@ namespace two_layer
     {
 
         inline void forwardPair(uint idR, uint idS) {
+            spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
             switch (g_iFilterType) {
                 case spatial_lib::IF_APRIL_STANDARD:
                     APRIL::standard::IntermediateFilterEntrypoint(idR,idS);
@@ -365,7 +366,7 @@ namespace two_layer
             static double d_ymax;
 
             static inline void forwardPair(uint idR, uint idS, spatial_lib::MBRRelationCaseE relationCase) {
-                
+                spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
                 switch (g_iFilterType) {
                     case spatial_lib::IF_APRIL_OPTIMIZED:
                         if (relationCase != spatial_lib::MBR_CROSS) {
@@ -872,6 +873,7 @@ namespace two_layer
             }
 
             static inline void forwardPair(uint idR, uint idS, spatial_lib::MBRRelationCaseE relationCase) {
+                spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
                 bool evaluated = evaluateQueryFromMBR(relationCase);
                 if (!evaluated) {
                     // if no accurate decision can be taken from the MBRs, forward the pair
@@ -1301,7 +1303,7 @@ namespace two_layer
         static double d_ymax;
 
         static inline void forwardPair(uint idR, uint idS, spatial_lib::MBRRelationCaseE relationCase) {
-            
+            spatial_lib::g_queryOutput.postMBRFilterCandidates += 1;
             switch (g_iFilterType) {
                 case spatial_lib::IF_APRIL_OPTIMIZED:
                     if (relationCase != spatial_lib::MBR_CROSS) {

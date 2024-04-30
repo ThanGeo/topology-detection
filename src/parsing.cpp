@@ -68,7 +68,7 @@ static void parseDatasetOptions(QueryStatementT *queryStmt) {
         xMaxR = dataset_config_pt.get<double>(queryStmt->datasetNicknameR+".xMax");
         yMaxR = dataset_config_pt.get<double>(queryStmt->datasetNicknameR+".yMax");
         queryStmt->boundsSet = true;
-        success_text("Set hardcoded bounds for R");
+        // success_text("Set hardcoded bounds for R");
     }
     double xMinS = std::numeric_limits<int>::max();
     double yMinS = std::numeric_limits<int>::max();
@@ -80,7 +80,7 @@ static void parseDatasetOptions(QueryStatementT *queryStmt) {
         xMaxS = dataset_config_pt.get<double>(queryStmt->datasetNicknameS+".xMax");
         yMaxS = dataset_config_pt.get<double>(queryStmt->datasetNicknameS+".yMax");
         queryStmt->boundsSet = true;
-        success_text("Set hardcoded bounds for S");
+        // success_text("Set hardcoded bounds for S");
     }
     // if they have different hardcoded bounds, assign as global the outermost ones (min of min, max of max)
     queryStmt->xMinGlobal = min(xMinR, xMinS);

@@ -478,13 +478,13 @@ static void initAPRIL() {
     clock_t timer = clock();
     APRIL::loadAPRILfromDisk(g_config.queryData.R);
     APRIL::loadAPRILfromDisk(g_config.queryData.S);
-    success_text_with_time("Loaded APRIL", spatial_lib::time::getElapsedTime(timer));
+    // success_text_with_time("Loaded APRIL", spatial_lib::time::getElapsedTime(timer));
 
     // setup filter (same april config for both datasets)
     // todo: extend to allow different april configs for R and S
     APRIL::setupAPRILIntermediateFilter(&g_config.queryData);
 
-    success_text("APRIL intermediate filter set.");
+    // success_text("APRIL intermediate filter set.");
 }
 
 static void initAPRILOTF() {
@@ -572,7 +572,7 @@ static void loadDataset(std::string &filepath, bool left) {
             }
         }
     }
-    success_text_with_number("Loaded dataset", polygonCount);
+    // success_text_with_text_and_number("Loaded dataset", filepath, polygonCount);
     file.close();
 }
 
@@ -594,11 +594,11 @@ static void setupDataspace(std::string &Rfilepath, std::string &Sfilepath) {
         matchSections(g_config.queryData.R, g_config.queryData.S);
     }
     
-    success_text("Setup data space.");
+    // success_text("Setup data space.");
 }
 
 void initConfig() {
-    log_task("Initializing..."); 
+    // log_task("Initializing..."); 
     // set up the dataspace
     setupDataspace(g_config.queryData.R.path, g_config.queryData.S.path);
     
@@ -670,5 +670,5 @@ void initConfig() {
     // reset query output
     spatial_lib::resetQueryOutput();
 
-    success_text("Init Done!");
+    // success_text("Init Done!");
 }
