@@ -1,5 +1,5 @@
 build/
-data/APRIL/
+data/APRIL/*.dat
 data/scalability_tests/
 data/vector_data/*.dat
 .vscode/
