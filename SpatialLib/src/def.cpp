@@ -31,7 +31,14 @@ namespace spatial_lib
 
         // on the fly april
         g_queryOutput.rasterizationsDone = 0;
-        
+
+        // development only
+        g_queryOutput.polygonStats.polVerticesMapR.clear();
+        g_queryOutput.polygonStats.polVerticesMapS.clear();
+        g_queryOutput.polygonStats.RFappearancesMapR.clear();
+        g_queryOutput.polygonStats.RFappearancesMapS.clear();
+        g_queryOutput.polygonStats.THappearancesMapR.clear();
+        g_queryOutput.polygonStats.THappearancesMapS.clear();
     }
 
     void setupScalabilityTesting() {
@@ -52,6 +59,7 @@ namespace spatial_lib
             g_scalContainer.bucketIfilterTime.insert(std::make_pair(bucketID,0));
             g_scalContainer.bucketRefinementTime.insert(std::make_pair(bucketID,0));
             g_scalContainer.bucketInconclusiveCount.insert(std::make_pair(bucketID, 0));
+            g_scalContainer.bucketPolygonCount.insert(std::make_pair(bucketID, bucketCount));
         }
         fin.close();
         // load bucket contents

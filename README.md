@@ -2,12 +2,22 @@
 
 ## Datasets
 Sample datasets to reproduce some of the experiments can be found in the following Google Drive link: 
-https://drive.google.com/drive/folders/1McEj_TCbN8G2N8IVUJxG1FqyRduax53J?usp=sharing
+https://drive.google.com/drive/folders/1AMOy2q9NGFnJ1eSXXJU82enFmTYXxryV?usp=drive_link
 
-Download and place all files in the **data/vector_data/** directory. 
+Download and place the following files in the **data/vector_data/** directory:
+- T1NA_fixed_binary.dat
+- T1NA_offset_map.dat
+- T2NA_fixed_binary.dat
+- T2NA_offset_map.dat
+- O5_Europe_fixed_binary.dat
+- O5_Europe_offset_map.dat
+- O6_Europe_fixed_binary.dat
+- O6_Europe_offset_map.dat
 
 ## Build
-In main directory, run ```source ./build.sh``` or 
+To manually build (not needed for tests, they build automatically), 
+run ```source ./build.sh``` in main directory or 
+
 ```
 mkdir build
 cd build
@@ -16,6 +26,10 @@ cmake --build .
 cd build
 make
 ```
+
+## Requirements
+- Boost Geometry
+- Enough RAM to load APRIL in-memory (see paper). If not enough memory, edit scripts and remove the dataset scenarios that it fails with and run the rest. 
 
 ## Experiments
 
@@ -34,11 +48,14 @@ It will print some results because the creation of APRIL isn't decoupled from ev
 ```
 ./find_relation.sh
 ```
-#### To run the experiment of Table 6 on the provided datasets (O5O6EU not included due to large size), run the following script:
+#### To run the experiment of Table 6, run the following script:
 ```
 ./relate.sh
 ```
 
-#### todo: scalability experiment
+#### To run the experiment of Figure 9, run the following script:
+```
+./scalability.sh
+```
 
 

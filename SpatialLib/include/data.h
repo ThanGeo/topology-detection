@@ -126,7 +126,8 @@ namespace spatial_lib
         P_ST3,
         P_OP2,
         P_OP3,
-        P_SCALABILITY,
+        P_SCALABILITY_OP2,
+        P_SCALABILITY_OP3,
         P_OTF,
     } PipelineSettingE;
 

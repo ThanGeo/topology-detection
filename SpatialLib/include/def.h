@@ -17,6 +17,12 @@ namespace spatial_lib
         INCONCLUSIVE,
     } QueryResultT;
 
+    typedef struct PolygonStats {
+        std::unordered_map<uint,uint> THappearancesMapR, THappearancesMapS; // recID -> appearances in true hit pairs
+        std::unordered_map<uint,uint> RFappearancesMapR, RFappearancesMapS; // recID -> appearances in refinement pairs
+        std::unordered_map<uint,uint> polVerticesMapR, polVerticesMapS; // recID -> number of vertices
+    } PolygonStatsT;
+
     typedef struct QueryOutput {
         // for regular query rsesults
         int queryResults;
@@ -34,6 +40,8 @@ namespace spatial_lib
         double refinementTime;
         // on the fly april
         uint rasterizationsDone;
+        // development only
+        PolygonStatsT polygonStats;
     } QueryOutputT;
 
     // global query output variable
@@ -55,6 +63,7 @@ namespace spatial_lib
         std::string bucketContentsPath;
         std::string bucketDataPath;
         uint numberOfBuckets;
+        std::unordered_map<uint,uint> bucketPolygonCount;
         std::unordered_map<uint,std::pair<uint,uint>> bucketIDTobucketRangeMap;
         std::unordered_map<std::pair<uint,uint>,uint,pair_hash> pairToBucketIDMap;
         std::unordered_map<uint,double> bucketIfilterTime;

@@ -53,9 +53,97 @@ static void exportCSV() {
     foutCSV.close();
 }
 
+static void printPolStats() {
+    // true hit pairs
+    unsigned long long vertexSumTH = 0;
+    unsigned long long vertexSumRF = 0;
+    unsigned long long averageAppearanceOfObjectInTH = 0;
+    unsigned long long averageAppearanceOfObjectInRF = 0;
+    for (auto &kv : spatial_lib::g_queryOutput.polygonStats.polVerticesMapR) {
+        
+        auto f = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(kv.first);
+        if (f != spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
+            averageAppearanceOfObjectInTH += f->second;
+            
+            vertexSumTH += kv.second;
+            // printf("%u,%u,%u\n",f->first, kv.second, f->second);
+            // vertexSumTH += f->second * kv.second;
+        }
+        
+        f = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(kv.first);
+        if (f != spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+            averageAppearanceOfObjectInRF += f->second;
+
+            vertexSumRF += kv.second;
+            // printf("%u,%u\n",f->first, f->second);
+            // vertexSumRF += f->second * kv.second;
+        }
+    }
+    double averageTHVertexCountR = (double) vertexSumTH / spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.size();
+    double averageRFVertexCountR = (double) vertexSumRF / spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.size();
+    printf("%d unique ids in true hits from dataset %s.\n", spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.size(), g_config.queryData.R.nickname.c_str());
+    printf("Average vertex count in true hit unique polygons of %s: %0.1f vertices\n", averageTHVertexCountR, g_config.queryData.R.nickname.c_str());
+    printf("Average number of appearances in TH per unique polygon of %s: %0.1f times\n", (double) averageAppearanceOfObjectInTH  / spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.size(), g_config.queryData.R.nickname.c_str());
+    printf("%d unique ids in refinement from dataset %s.\n", spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.size(), g_config.queryData.R.nickname.c_str());
+    printf("Average vertex count in refinement unique polygons of %s: %0.1f veftices\n", averageRFVertexCountR, g_config.queryData.R.nickname.c_str());
+    printf("Average number of appearances in RF per unique polygon of %s: %0.1f times\n", (double) averageAppearanceOfObjectInRF  / spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.size(), g_config.queryData.R.nickname.c_str());
+
+    vertexSumTH = 0;
+    vertexSumRF = 0;
+    averageAppearanceOfObjectInTH = 0;
+    averageAppearanceOfObjectInRF = 0;
+    for (auto &kv : spatial_lib::g_queryOutput.polygonStats.polVerticesMapS) {
+        auto f = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(kv.first);
+        if (f != spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.end()) {
+            averageAppearanceOfObjectInTH += f->second;
+
+
+            vertexSumTH += kv.second;
+            // vertexSumTH += f->second * kv.second;
+        }
+        f = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(kv.first);
+        if (f != spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+            averageAppearanceOfObjectInRF += f->second;
+
+
+            vertexSumRF += kv.second;
+            // vertexSumRF += f->second * kv.second;
+        }
+    }
+    double averageTHVertexCountS = (double) vertexSumTH / spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.size();
+    double averageRFVertexCountS = (double) vertexSumRF / spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.size();
+    printf("%d unique ids in true hits from dataset %s.\n", spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.size(), g_config.queryData.S.nickname.c_str());
+    printf("Average vertex count in true hit unique polygons of %s: %0.1f vertices\n", averageTHVertexCountS, g_config.queryData.S.nickname.c_str());
+    printf("Average number of appearances in TH per unique polygon of %s: %0.1f times\n", (double) averageAppearanceOfObjectInTH  / spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.size(), g_config.queryData.S.nickname.c_str());
+    printf("%d unique ids in refinement from dataset %s.\n", spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.size(), g_config.queryData.S.nickname.c_str());
+    printf("Average vertex count in refinement unique polygons of %s: %0.1f veftices\n", averageRFVertexCountS, g_config.queryData.S.nickname.c_str());
+    printf("Average number of appearances in RF per unique polygon of %s: %0.1f times\n", (double) averageAppearanceOfObjectInRF  / spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.size(), g_config.queryData.S.nickname.c_str());
+
+}
+
 static void printAnalysis() {
-    success_text_with_double_and_unit("Throughput", (double) spatial_lib::g_queryOutput.postMBRFilterCandidates / spatial_lib::g_queryOutput.totalTime, "pairs/sec");
-    success_text_with_percentage("Inconclusive pairs (% of MBR candidates)", spatial_lib::g_queryOutput.refinementCandidates / (double) spatial_lib::g_queryOutput.postMBRFilterCandidates * 100);
+    if (g_config.pipeline.setting != spatial_lib::P_SCALABILITY_OP2 && g_config.pipeline.setting != spatial_lib::P_SCALABILITY_OP3) {
+        // relate or find relation
+        success_text_with_double_and_unit("Throughput", (double) spatial_lib::g_queryOutput.postMBRFilterCandidates / spatial_lib::g_queryOutput.totalTime, "pairs/sec");
+        success_text_with_percentage("Inconclusive pairs (% of MBR candidates)", spatial_lib::g_queryOutput.refinementCandidates / (double) spatial_lib::g_queryOutput.postMBRFilterCandidates * 100);
+    }
+    else if (g_config.pipeline.setting == spatial_lib::P_SCALABILITY_OP2) {
+        for(int i=0; i<spatial_lib::g_scalContainer.numberOfBuckets; i++) {
+            success_text_with_number("Complexity level", i+1);
+            success_text_with_number("\tRefinement pairs", spatial_lib::g_scalContainer.bucketPolygonCount[i]);
+            success_text_with_time("\tRefinement time", spatial_lib::g_scalContainer.bucketRefinementTime[i]);
+        }
+    }
+    else if (g_config.pipeline.setting == spatial_lib::P_SCALABILITY_OP3) {
+        for(int i=0; i<spatial_lib::g_scalContainer.numberOfBuckets; i++) {
+            success_text_with_number("Complexity level", i+1);
+            success_text_with_percentage("\tInconclusive pairs", (spatial_lib::g_scalContainer.bucketInconclusiveCount[i] / (double) spatial_lib::g_scalContainer.bucketPolygonCount[i]) * 100);
+            // printf("%u\n", spatial_lib::g_scalContainer.bucketInconclusiveCount[i]);
+            success_text_with_time("\tIntermediate filter time", spatial_lib::g_scalContainer.bucketIfilterTime[i]);
+            success_text_with_time("\tRefinement time", spatial_lib::g_scalContainer.bucketRefinementTime[i]);
+        }
+    }
+
 }
 
 static void printResults(int runTimes) {
@@ -139,7 +227,7 @@ int main(int argc, char *argv[]) {
     double iFilterTime = 0;
     double refinementTime = 0;
     for (int i=0; i<runTimes; i++) {
-        // log_task_w_text("Running iteration ", std::to_string(i+1));
+        log_task_w_text("Running iteration", std::to_string(i+1));
         // reset
         spatial_lib::resetQueryOutput();
         
@@ -162,6 +250,9 @@ int main(int argc, char *argv[]) {
     // printResults(runTimes);
 
     printAnalysis();
+
+    // dev only
+    // printPolStats();
 
     // output to CSV
     if (g_config.actions.exportCSV) {

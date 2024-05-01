@@ -37,7 +37,7 @@ void success_text_with_text_and_number(char* text, std::string &extra_text, int 
 void success_text_with_time(char* text, double seconds) {
     std::string textStr(text);
     std::string msg = GREEN "[SUCCESS]" NC ": " + textStr;
-    fprintf(stderr, "%s in %0.2f seconds.\n", msg.c_str(), seconds);
+    fprintf(stderr, "%s: %0.2f seconds.\n", msg.c_str(), seconds);
 }
 
 void success_text_with_double_and_unit(char *text, double val, std::string unit) {

@@ -23,7 +23,8 @@ static std::unordered_map<std::string, spatial_lib::PipelineSettingE> pipelineSe
     {"ST3", spatial_lib::P_ST3},
     {"OP2", spatial_lib::P_OP2},
     {"OP3", spatial_lib::P_OP3},
-    {"SCALABILITY", spatial_lib::P_SCALABILITY},
+    {"SCALABILITY_OP2", spatial_lib::P_SCALABILITY_OP2},
+    {"SCALABILITY_OP3", spatial_lib::P_SCALABILITY_OP3},
     {"OTF", spatial_lib::P_OTF},
 };
 
@@ -51,7 +52,8 @@ static std::string pipelineSettingIntToText(spatial_lib::PipelineSettingE val) {
         case spatial_lib::P_OP2: return "OP2";
         case spatial_lib::P_ST3: return "ST3";
         case spatial_lib::P_OP3: return "OP3";
-        case spatial_lib::P_SCALABILITY: return "SCALABILITY";
+        case spatial_lib::P_SCALABILITY_OP2: return "SCALABILITY_OP2";
+        case spatial_lib::P_SCALABILITY_OP3: return "SCALABILITY_OP3";
         case spatial_lib::P_OTF: return "OTF";
     }
 }
@@ -112,7 +114,7 @@ static bool verifyQuery(QueryStatementT *queryStmt) {
     }
 
     // check if its a scalability experiment and verify
-    if (g_config.pipeline.setting == spatial_lib::P_SCALABILITY && 
+    if ((g_config.pipeline.setting == spatial_lib::P_SCALABILITY_OP2 || g_config.pipeline.setting == spatial_lib::P_SCALABILITY_OP3) && 
         (itqt->second != spatial_lib::Q_FIND_RELATION || 
         queryStmt->datasetNicknameR != "O5EU" || queryStmt->datasetNicknameS != "O6EU")) {
 
@@ -230,7 +232,12 @@ bool verifyPipelineSettingsAndBuild(pipelineStatementT &pipelineStmt) {
             g_config.pipeline.iFilterType = spatial_lib::IF_APRIL_OPTIMIZED;
             g_config.pipeline.RefinementEnabled = true;
             break;
-        case spatial_lib::P_SCALABILITY:
+        case spatial_lib::P_SCALABILITY_OP2:
+            g_config.pipeline.MBRFilterType = spatial_lib::MF_SCALABILITY;
+            g_config.pipeline.iFilterType = spatial_lib::IF_NONE;
+            g_config.pipeline.RefinementEnabled = true;
+            break;
+        case spatial_lib::P_SCALABILITY_OP3:
             g_config.pipeline.MBRFilterType = spatial_lib::MF_SCALABILITY;
             g_config.pipeline.iFilterType = spatial_lib::IF_APRIL_SCALABILITY;
             g_config.pipeline.RefinementEnabled = true;

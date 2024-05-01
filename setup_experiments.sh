@@ -8,7 +8,7 @@ set -e
 # dataets to run
 declare -a dataset_pairs=("T1NA T2NA"
                          "T1NA T3NA"
-                         "T3NA T10NA")
+                         "O5EU O6EU")
 
 # go to build dir
 cd build
