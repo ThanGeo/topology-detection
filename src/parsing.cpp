@@ -204,7 +204,7 @@ void parseArgumentsAndConfigurationFile(int argc, char *argv[]) {
     }
 
     // read arguments
-    while ((c = getopt(argc, argv, "s:m:p:cf:q:R:S:ev:?")) != -1)
+    while ((c = getopt(argc, argv, "s:m:p:cf:q:R:S:ev:z?")) != -1)
     {
         switch (c)
         {
@@ -237,6 +237,9 @@ void parseArgumentsAndConfigurationFile(int argc, char *argv[]) {
                 break;
             case 's':
                 pipelineStmt.settingStr = std::string(optarg);
+                break;
+            case 'z':
+                iFilterStmt.compression = spatial_lib::C_COMPRESSION_ENABLED;
                 break;
             default:
                 exit(-1);

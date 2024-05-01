@@ -289,7 +289,16 @@ namespace APRIL
                     spatial_lib::AprilDataT* aprilS = spatial_lib::getAprilDataBySectionAndObjectIDs(g_query->S, sectionID, idS);
 
                     // use APRIL intermediate filter
-                    iFilterResult = RinSContainmentAPRILUncompressed(aprilR, aprilS);
+                    
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
+                        iFilterResult = RinSContainmentAPRILUncompressed(aprilR, aprilS);
+                    } else {
+                        // compressed
+                        iFilterResult = compressed::RinSContainmentAPRIL(aprilR, aprilS);
+                    }
+                    
+                    
                     // switch based on result
                     switch(iFilterResult) {
                         // true hits, count and return
@@ -413,7 +422,14 @@ namespace APRIL
                     spatial_lib::AprilDataT* aprilS = spatial_lib::getAprilDataBySectionAndObjectIDs(g_query->S, sectionID, idS);
 
                     // use APRIL intermediate filter
-                    iFilterResult = SinRContainmentAPRILUncompressed(aprilR, aprilS);
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
+                        iFilterResult = SinRContainmentAPRILUncompressed(aprilR, aprilS);
+                    } else {
+                        // compressed
+                        iFilterResult = compressed::SinRContainmentAPRIL(aprilR, aprilS);
+                    }
+                    
                     // switch based on result
                     switch(iFilterResult) {
                         // true hits, count and return
@@ -537,7 +553,17 @@ namespace APRIL
                     spatial_lib::AprilDataT* aprilS = spatial_lib::getAprilDataBySectionAndObjectIDs(g_query->S, sectionID, idS);
 
                     // use APRIL intermediate filter
-                    iFilterResult = MBRIntersectionAPRILUncompressed(aprilR, aprilS);
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
+                        iFilterResult = MBRIntersectionAPRILUncompressed(aprilR, aprilS);
+                    } else {
+                        // compressed
+                        iFilterResult = compressed::MBRIntersectionAPRIL(aprilR, aprilS);
+                    }
+                    
+                   
+                   
+                   
                     // switch based on result
                     switch(iFilterResult) {
                         // true hits, count and return
@@ -638,7 +664,13 @@ namespace APRIL
                     spatial_lib::AprilDataT* aprilS = spatial_lib::getAprilDataBySectionAndObjectIDs(g_query->S, sectionID, idS);
 
                     // use APRIL intermediate filter
-                    iFilterResult = equalMBRsAPRILUncompressed(idR, idS, aprilR, aprilS);
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
+                        iFilterResult = equalMBRsAPRILUncompressed(idR, idS, aprilR, aprilS);
+                    } else {
+                        iFilterResult = compressed::equalMBRsAPRIL(idR, idS, aprilR, aprilS);
+                    }
+                    
                 
                     // switch based on result
                     switch(iFilterResult) {
@@ -1112,6 +1144,7 @@ namespace APRIL
              * 
              */
             static void APRILFindRelation(uint idR, uint idS) {
+                // printf("%u,%u\n",idR,idS);
                 // get common sections
                 std::vector<uint> commonSections = spatial_lib::getCommonSectionIDsOfObjects(g_query->R, g_query->S, idR, idS);
                 // for each common section
@@ -1123,7 +1156,16 @@ namespace APRIL
 
                     // use APRIL intermediate filter
                     // TODO: optimize (create new func that only checks AA)
-                    iFilterResult = intersectionAPRILUncompressed(aprilR, aprilS);
+                    
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
+                        iFilterResult = intersectionAPRILUncompressed(aprilR, aprilS);
+                    } else {
+                        // compressed  
+                        iFilterResult = compressed::intersectionAPRIL(aprilR, aprilS);
+                    }
+                    
+                    
                     // switch based on result
                     if (iFilterResult == spatial_lib::TRUE_NEGATIVE) {
                         // true negative, count disjoint pair
@@ -1209,6 +1251,159 @@ namespace APRIL
         namespace find_relation
         {
 
+            namespace compressed
+            {
+                int intersectionAPRIL(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS) {
+                    // AA
+                    if (!vbyte_join_compressed_sorted32(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL)) {
+                        return spatial_lib::TRUE_NEGATIVE;
+                    }
+
+                    // AF
+                    if (vbyte_join_compressed_sorted32(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsFULLcompressed.data(), aprilS->numIntervalsFULL)) {
+                        return spatial_lib::TRUE_HIT;
+                    }
+
+                    // FA
+                    if (vbyte_join_compressed_sorted32(aprilR->intervalsFULLcompressed.data(), aprilR->numIntervalsFULL, aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL)) {
+                        return spatial_lib::TRUE_HIT;
+                    }
+                    return spatial_lib::INCONCLUSIVE;
+                }
+
+                int RinSContainmentAPRIL(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS) {
+                    // join AA for containment, intersection or disjoint
+                    int AAresult = vbyte_join_compressed_sorted32_hybrid(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL);
+                    // printf("AA: %d\n", AAresult);
+                    if (AAresult == spatial_lib::IL_DISJOINT) {
+                        // true negative
+                        return spatial_lib::TR_DISJOINT;
+                    } else if(AAresult == spatial_lib::IL_R_INSIDE_S) {
+                        // all R_A intervals are inside S_A 
+                        if (aprilS->numIntervalsFULL) {
+                            // join AF for containment, intersection or disjoint
+                            int AFresult = vbyte_join_compressed_sorted32_hybrid(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsFULLcompressed.data(), aprilS->numIntervalsFULL);
+                            if (AFresult == spatial_lib::IL_R_INSIDE_S) {
+                                // AF containment
+                                return spatial_lib::TR_INSIDE;
+                            } else if (AFresult == spatial_lib::IL_INTERSECT) {
+                                // AF intersect, refinement for: inside, covered by, [true hit intersect]
+                                return spatial_lib::REFINE_INSIDE_COVEREDBY_TRUEHIT_INTERSECT;
+                            }
+                        } else {
+                            if(vbyte_join_compressed_sorted32(aprilR->intervalsFULLcompressed.data(), aprilR->numIntervalsFULL, aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL)) {
+                                // intersection
+                                return spatial_lib::TR_INTERSECT;
+                            }
+                        }
+                    } else {
+                        // intersection
+                        if(vbyte_join_compressed_sorted32(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsFULLcompressed.data(), aprilS->numIntervalsFULL)){
+                            // intersection
+                            return spatial_lib::TR_INTERSECT;
+                        } else if(vbyte_join_compressed_sorted32(aprilR->intervalsFULLcompressed.data(), aprilR->numIntervalsFULL, aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL)) {
+                            // intersection
+                            return spatial_lib::TR_INTERSECT;
+                        }
+                    }
+
+                    // refinement for: disjoint, inside, covered by, meet, intersect
+                    return spatial_lib::REFINE_DISJOINT_INSIDE_COVEREDBY_MEET_INTERSECT;
+                }
+
+                int SinRContainmentAPRIL(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS) {
+                    // join AA for containment, intersection or disjoint
+                    int AAresult = vbyte_join_compressed_sorted32_hybrid(aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL, aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL);
+                    if (AAresult == spatial_lib::IL_DISJOINT) {
+                        // true negative
+                        return spatial_lib::TR_DISJOINT;
+                    } else if(AAresult == spatial_lib::IL_R_INSIDE_S) {
+                        // all S_A intervals are inside R_A 
+                        if (aprilR->numIntervalsFULL) {
+                            // join AF for containment, intersection or disjoint
+                            int AFresult = vbyte_join_compressed_sorted32_hybrid(aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL, aprilR->intervalsFULLcompressed.data(), aprilR->numIntervalsFULL);
+                            if (AFresult == spatial_lib::IL_R_INSIDE_S) {
+                                // AF containment (dont confuse IL_R_INSIDE_S, it is based on how you pass arguments to the hybrid function)
+                                return spatial_lib::TR_CONTAINS;
+                            } else if (AFresult == spatial_lib::IL_INTERSECT) {
+                                // AF intersect, refinement for: contains, covers, [true hit intersect]
+                                return spatial_lib::REFINE_CONTAINS_COVERS_TRUEHIT_INTERSECT;
+                            }
+                        } else {
+                            if(vbyte_join_compressed_sorted32(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsFULLcompressed.data(), aprilS->numIntervalsFULL)) {
+                                // check AF intersection
+                                return spatial_lib::TR_INTERSECT;
+                            }
+                        }
+                    } else {
+                        // intersection
+                        if(vbyte_join_compressed_sorted32(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsFULLcompressed.data(), aprilS->numIntervalsFULL)){
+                            // intersection
+                            return spatial_lib::TR_INTERSECT;
+                        } else if(vbyte_join_compressed_sorted32(aprilR->intervalsFULLcompressed.data(), aprilR->numIntervalsFULL, aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL)) {
+                            // intersection
+                            return spatial_lib::TR_INTERSECT;
+                        }
+                    }
+
+                    // refinement for: disjoint, inside, covered by, meet, intersect
+                    return spatial_lib::REFINE_DISJOINT_CONTAINS_COVERS_MEET_INTERSECT;
+                }
+
+                int MBRIntersectionAPRIL(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS) {
+                    // use regular APRIL
+                    int aprilResult = intersectionAPRIL(aprilR, aprilS);
+                    switch(aprilResult) {
+                        case spatial_lib::TRUE_NEGATIVE:
+                            return spatial_lib::TR_DISJOINT;
+                        case spatial_lib::TRUE_HIT:
+                            return spatial_lib::TR_INTERSECT;
+                        case spatial_lib::INCONCLUSIVE:
+                            return spatial_lib::REFINE_DISJOINT_MEET_INTERSECT;
+                    }
+                }
+
+                int equalMBRsAPRIL(uint idR, uint idS, spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS) {
+                    // printf("%u,%u\n", idR, idS);
+                    // AA join to look for exact relationship between the lists
+                    // int AAresult = joinIntervalListsSymmetricalOptimized(aprilR->intervalsALL, aprilR->numIntervalsALL, aprilS->intervalsALL, aprilS->numIntervalsALL);
+                    int AAresult = vbyte_join_compressed_sorted32_symmetrical(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL);
+                    if (AAresult == spatial_lib::IL_MATCH) {
+                        // refine for equal, covered by, covers and true hit intersect
+                        return spatial_lib::REFINE_EQUAL_COVERS_COVEREDBY_TRUEHIT_INTERSECT;
+                    } else if (AAresult == spatial_lib::IL_R_INSIDE_S) {
+                        int AFresult = vbyte_join_compressed_sorted32_hybrid(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsFULLcompressed.data(), aprilS->numIntervalsFULL);
+                        // printf("AF: %d\n", AFresult);
+                        if (AFresult == spatial_lib::IL_R_INSIDE_S) {
+                            // true hit covered by (return inside because reasons)
+                            // return spatial_lib::TR_COVERED_BY;
+                            return spatial_lib::TR_INSIDE;
+                        } 
+                        // AA no containment, AF disjoint or intersect
+                        return spatial_lib::REFINE_COVEREDBY_TRUEHIT_INTERSECT;
+                    } else if(AAresult == spatial_lib::IL_S_INSIDE_R) {
+                        int FAresult = vbyte_join_compressed_sorted32_hybrid(aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL, aprilR->intervalsFULLcompressed.data(), aprilR->numIntervalsFULL);
+                        // printf("FA: %d\n", FAresult);
+                        // in this case R is S because joinIntervalsHybrid handles the first list as R and the second as S
+                        // and only checks for assymetrical containment R in S
+                        if (FAresult == spatial_lib::IL_R_INSIDE_S) {
+                            // FA true hit covers, return contains
+                            // return spatial_lib::TR_COVERS;
+                            return spatial_lib::TR_CONTAINS;
+                        } 
+                        // AA no containment, FA disjoint or intersect
+                        return spatial_lib::REFINE_COVERS_TRUEHIT_INTERSECT;
+                    } else {
+                        // AA no containment, true hit intersect because equal MBRs
+                        // maybe a special case of meet, so refine first
+                        if(spatial_lib::isMeet(idR, idS)){
+                            return spatial_lib::TR_MEET;
+                        }
+                        return spatial_lib::TR_INTERSECT;
+                    }
+                }
+            }
+
             /************************************************/
             /**
              * SPECIALIZED TOPOLOGY FOR SCALABILITY TESTS
@@ -1228,7 +1423,17 @@ namespace APRIL
                     spatial_lib::AprilDataT* aprilS = spatial_lib::getAprilDataBySectionAndObjectIDs(g_query->S, sectionID, idS);
 
                     // use APRIL intermediate filter
-                    iFilterResult = RinSContainmentAPRILUncompressed(aprilR, aprilS);
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
+                        iFilterResult = RinSContainmentAPRILUncompressed(aprilR, aprilS);
+                    } else {
+                        // compressed
+                        iFilterResult = compressed::RinSContainmentAPRIL(aprilR, aprilS);
+                    }
+                    
+                    
+                    
+                    
                     // switch based on result
                     switch(iFilterResult) {
                         // true hits, count and return
@@ -1302,7 +1507,14 @@ namespace APRIL
                     spatial_lib::AprilDataT* aprilS = spatial_lib::getAprilDataBySectionAndObjectIDs(g_query->S, sectionID, idS);
 
                     // use APRIL intermediate filter
-                    iFilterResult = SinRContainmentAPRILUncompressed(aprilR, aprilS);
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
+                        iFilterResult = SinRContainmentAPRILUncompressed(aprilR, aprilS);
+                    } else {
+                        // compressed
+                        iFilterResult = compressed::SinRContainmentAPRIL(aprilR, aprilS);
+                    }
+
                     // switch based on result
                     switch(iFilterResult) {
                         // true hits, count and return
@@ -1375,7 +1587,14 @@ namespace APRIL
                     spatial_lib::AprilDataT* aprilS = spatial_lib::getAprilDataBySectionAndObjectIDs(g_query->S, sectionID, idS);
 
                     // use APRIL intermediate filter
-                    iFilterResult = MBRIntersectionAPRILUncompressed(aprilR, aprilS);
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
+                        iFilterResult = MBRIntersectionAPRILUncompressed(aprilR, aprilS);
+                    } else {
+                        // compressed
+                        iFilterResult = compressed::MBRIntersectionAPRIL(aprilR, aprilS);
+                    }
+
                     // switch based on result
                     switch(iFilterResult) {
                         // true hits, count and return
@@ -1430,7 +1649,13 @@ namespace APRIL
                     spatial_lib::AprilDataT* aprilS = spatial_lib::getAprilDataBySectionAndObjectIDs(g_query->S, sectionID, idS);
 
                     // use APRIL intermediate filter
+                    if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                        // uncompressed
                     iFilterResult = equalMBRsAPRILUncompressed(idR, idS, aprilR, aprilS);
+                    } else {
+                        // compressed
+                        iFilterResult = compressed::equalMBRsAPRIL(idR, idS, aprilR, aprilS);
+                    }
                 
                     // switch based on result
                     switch(iFilterResult) {

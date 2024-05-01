@@ -93,6 +93,11 @@ namespace spatial_lib
         void* data;
     } VectorDataT;
 
+    typedef enum Compression {
+        C_COMPRESSION_DISABLED,
+        C_COMPRESSION_ENABLED,
+    } CompressionE;
+
     // spatial approximations
     typedef enum ApproximationType{
         AT_NONE,
@@ -138,6 +143,11 @@ namespace spatial_lib
         std::vector<uint> intervalsALL;
         uint numIntervalsFULL = 0;
         std::vector<uint> intervalsFULL;
+
+        std::vector<uint8_t> intervalsALLcompressed;
+        std::vector<uint8_t> intervalsFULLcompressed;
+        uint compressedLengthALL;
+        uint compressedLengthFULL;
     }AprilDataT;
 
     // APRIL configuration
@@ -147,7 +157,7 @@ namespace spatial_lib
         // cells per dimension in Hilbert grid: 2^N
         uint cellsPerDim;
         // compression enabled, disabled
-        bool compression;
+        int compression = C_COMPRESSION_DISABLED;
         // how many partitions in the data space
         int partitions;
         // APRIL data file paths

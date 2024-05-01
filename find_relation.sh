@@ -24,9 +24,9 @@ do
     echo OP2:
     ./main -q find_relation -s OP2 -R ${pair[0]} -S ${pair[1]}
     echo ST3:
-    ./main -q find_relation -s ST3 -R ${pair[0]} -S ${pair[1]}
+    ./main -q find_relation -z -s ST3 -R ${pair[0]} -S ${pair[1]}
     echo OP3:
-    ./main -q find_relation -s OP3 -R ${pair[0]} -S ${pair[1]}
+    ./main -q find_relation -z -s OP3 -R ${pair[0]} -S ${pair[1]}
     echo
 done
 

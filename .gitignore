@@ -5,3 +5,4 @@ data/vector_data/*.dat
 .vscode/
 experiment_results/
 dump.txt
+libvbyte-master/*.o

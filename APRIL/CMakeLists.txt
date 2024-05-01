@@ -11,6 +11,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(ProjectType SHARED) # make STATIC or SHARED
 
+include_directories(libvbyte-master)
+if(NOT TARGET libvbyte-master)
+    add_subdirectory(libvbyte-master)
+endif()
+
 include_directories(SpatialLib)
 if(NOT TARGET SpatialLib)
     add_subdirectory(SpatialLib)

@@ -329,8 +329,14 @@ static bool createAPRIL(spatial_lib::DatasetT &dataset) {
             // generate the raster based on the configuration
             spatial_lib::AprilDataT aprilData = rasterizerlib::generate(polygon, rasterizerlib::GT_APRIL);
             
-            // save on disk
-            APRIL::saveAPRILonDisk(foutALL, foutFULL, recID, section->sectionID, &aprilData);
+            if (dataset.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+                // save on disk
+                APRIL::saveAPRILonDisk(foutALL, foutFULL, recID, section->sectionID, &aprilData);
+            } else{
+                // compress and save
+                APRIL::compressAndSaveAPRILonDisk(foutALL, foutFULL, recID, section->sectionID, &aprilData);
+            }
+
         }
     }
 
@@ -483,8 +489,15 @@ static void initAPRIL() {
 
     // load APRIL from disk
     clock_t timer = clock();
-    APRIL::loadAPRILfromDisk(g_config.queryData.R);
-    APRIL::loadAPRILfromDisk(g_config.queryData.S);
+    if (g_config.queryData.R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
+        // only check R april data because they have to match. Todo: join compressed with uncompressed
+        APRIL::loadAPRILfromDisk(g_config.queryData.R);
+        APRIL::loadAPRILfromDisk(g_config.queryData.S);
+    } else {
+        // load compressed APRIL
+        APRIL::loadCompressedAPRILfromDisk(g_config.queryData.R);
+        APRIL::loadCompressedAPRILfromDisk(g_config.queryData.S);
+    }
     // success_text_with_time("Loaded APRIL", spatial_lib::time::getElapsedTime(timer));
 
     // setup filter (same april config for both datasets)

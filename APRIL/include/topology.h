@@ -1,11 +1,32 @@
 #ifndef APRIL_TOPOLOGY_H
 #define APRIL_TOPOLOGY_H
 
+#include "vbyte.h"
 #include "SpatialLib.h"
 #include "join.h"
 
 namespace APRIL
 {
+    namespace compressed
+    {
+        /**
+         * joins two compressed APRIL approximations to detect true hits, true negatives and inconclusive cases for INTERSECTION.
+        */
+        int intersectionAPRIL(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS);
+
+
+
+        int RinSContainmentAPRIL(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS);
+
+
+        int SinRContainmentAPRIL(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS);
+
+        int MBRIntersectionAPRIL(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS);
+
+
+        int equalMBRsAPRIL(uint idR, uint idS, spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS);
+    }
+
     int findRelationAPRILUncompressed(uint idR, uint idS, spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS);
 
     /**
