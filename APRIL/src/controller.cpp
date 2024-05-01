@@ -315,22 +315,23 @@ namespace APRIL
 
 
                             // dev-pol-stats - true hit
-                            // auto itR = spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.find(idR);
-                            // auto itS = spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.find(idS);
-                            // if (itR == spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.end() || itS == spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.end()) {
+                            // auto itR = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(idR);
+                            // if (itR == spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
+                            //     // count as first-time TH
+                            //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.insert(std::make_pair(idR, 1));
+                            //     // count vertices
                             //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
                             //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, vertexCounts.first));
-                            //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
-                            // }
-                            // itR = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(idR);
-                            // itS = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(idS);
-                            // if (itR == spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
-                            //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.insert(std::make_pair(idR, 1));
                             // } else {
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR[idR]++;
                             // }
+                            // auto itS = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(idS);
                             // if (itS == spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.end()) {
+                            //     // count as first-time TH
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.insert(std::make_pair(idS, 1));
+                            //     // count vertices
+                            //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+                            //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
                             // } else {
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapS[idS]++;
                             // }
@@ -370,22 +371,23 @@ namespace APRIL
                 }
 
                 // dev-pol-stats - refinement
-                // auto itR = spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.find(idR);
-                // auto itS = spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.find(idS);
-                // if (itR == spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.end() || itS == spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.end()) {
+                // auto itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
+                // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+                //     // count as first-time RF
+                //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
+                //     // count vertices
                 //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
                 //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, vertexCounts.first));
-                //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
-                // }
-                // itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
-                // itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
-                // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
-                //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
                 // } else {
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR[idR]++;
                 // }
+                // auto itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
                 // if (itS == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+                //     // count as first-time RF
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.insert(std::make_pair(idS, 1));
+                //     // count vertices
+                //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+                //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
                 // } else {
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS[idS]++;
                 // }
@@ -428,22 +430,23 @@ namespace APRIL
 
 
                             // dev-pol-stats - true hit
-                            // auto itR = spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.find(idR);
-                            // auto itS = spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.find(idS);
-                            // if (itR == spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.end() || itS == spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.end()) {
+                            // auto itR = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(idR);
+                            // if (itR == spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
+                            //     // count as first-time TH
+                            //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.insert(std::make_pair(idR, 1));
+                            //     // count vertices
                             //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
                             //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, vertexCounts.first));
-                            //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
-                            // }
-                            // itR = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(idR);
-                            // itS = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(idS);
-                            // if (itR == spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
-                            //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.insert(std::make_pair(idR, 1));
                             // } else {
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR[idR]++;
                             // }
+                            // auto itS = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(idS);
                             // if (itS == spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.end()) {
+                            //     // count as first-time TH
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.insert(std::make_pair(idS, 1));
+                            //     // count vertices
+                            //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+                            //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
                             // } else {
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapS[idS]++;
                             // }
@@ -488,22 +491,23 @@ namespace APRIL
 
 
                 // dev-pol-stats - refinement
-                // auto itR = spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.find(idR);
-                // auto itS = spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.find(idS);
-                // if (itR == spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.end() || itS == spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.end()) {
+                // auto itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
+                // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+                //     // count as first-time RF
+                //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
+                //     // count vertices
                 //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
                 //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, vertexCounts.first));
-                //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
-                // }
-                // itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
-                // itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
-                // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
-                //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
                 // } else {
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR[idR]++;
                 // }
+                // auto itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
                 // if (itS == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+                //     // count as first-time RF
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.insert(std::make_pair(idS, 1));
+                //     // count vertices
+                //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+                //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
                 // } else {
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS[idS]++;
                 // }
@@ -544,22 +548,23 @@ namespace APRIL
                             // }
 
                             // dev-pol-stats - true hit
-                            // auto itR = spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.find(idR);
-                            // auto itS = spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.find(idS);
-                            // if (itR == spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.end() || itS == spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.end()) {
+                            // auto itR = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(idR);
+                            // if (itR == spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
+                            //     // count as first-time TH
+                            //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.insert(std::make_pair(idR, 1));
+                            //     // count vertices
                             //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
                             //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, vertexCounts.first));
-                            //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
-                            // }
-                            // itR = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(idR);
-                            // itS = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(idS);
-                            // if (itR == spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
-                            //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.insert(std::make_pair(idR, 1));
                             // } else {
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR[idR]++;
                             // }
+                            // auto itS = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(idS);
                             // if (itS == spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.end()) {
+                            //     // count as first-time TH
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.insert(std::make_pair(idS, 1));
+                            //     // count vertices
+                            //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+                            //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
                             // } else {
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapS[idS]++;
                             // }
@@ -584,22 +589,23 @@ namespace APRIL
 
 
                 // dev-pol-stats - refinement
-                // auto itR = spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.find(idR);
-                // auto itS = spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.find(idS);
-                // if (itR == spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.end() || itS == spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.end()) {
+                // auto itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
+                // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+                //     // count as first-time RF
+                //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
+                //     // count vertices
                 //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
                 //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, vertexCounts.first));
-                //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
-                // }
-                // itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
-                // itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
-                // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
-                //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
                 // } else {
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR[idR]++;
                 // }
+                // auto itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
                 // if (itS == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+                //     // count as first-time RF
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.insert(std::make_pair(idS, 1));
+                //     // count vertices
+                //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+                //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
                 // } else {
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS[idS]++;
                 // }
@@ -648,22 +654,23 @@ namespace APRIL
 
 
                             // dev-pol-stats - true hit
-                            // auto itR = spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.find(idR);
-                            // auto itS = spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.find(idS);
-                            // if (itR == spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.end() || itS == spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.end()) {
+                            // auto itR = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(idR);
+                            // if (itR == spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
+                            //     // count as first-time TH
+                            //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.insert(std::make_pair(idR, 1));
+                            //     // count vertices
                             //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
                             //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, vertexCounts.first));
-                            //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
-                            // }
-                            // itR = spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.find(idR);
-                            // itS = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(idS);
-                            // if (itR == spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.end()) {
-                            //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR.insert(std::make_pair(idR, 1));
                             // } else {
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapR[idR]++;
                             // }
+                            // auto itS = spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.find(idS);
                             // if (itS == spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.end()) {
+                            //     // count as first-time TH
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapS.insert(std::make_pair(idS, 1));
+                            //     // count vertices
+                            //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+                            //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
                             // } else {
                             //     spatial_lib::g_queryOutput.polygonStats.THappearancesMapS[idS]++;
                             // }
@@ -719,22 +726,23 @@ namespace APRIL
                 }
 
                 // dev-pol-stats - refinement
-                // auto itR = spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.find(idR);
-                // auto itS = spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.find(idS);
-                // if (itR == spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.end() || itS == spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.end()) {
+                // auto itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
+                // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+                //     // count as first-time RF
+                //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
+                //     // count vertices
                 //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
                 //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, vertexCounts.first));
-                //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
-                // }
-                // itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
-                // itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
-                // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
-                //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
                 // } else {
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR[idR]++;
                 // }
+                // auto itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
                 // if (itS == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+                //     // count as first-time RF
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.insert(std::make_pair(idS, 1));
+                //     // count vertices
+                //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+                //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, vertexCounts.second));
                 // } else {
                 //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS[idS]++;
                 // }

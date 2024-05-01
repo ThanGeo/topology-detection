@@ -541,6 +541,30 @@ namespace spatial_lib
         bg_polygon boostPolygonR = loadPolygonFromDiskBoostGeometry(idR, finR, offsetMapR);
         bg_polygon boostPolygonS = loadPolygonFromDiskBoostGeometry(idS, finS, offsetMapS);
 
+
+        // dev-pol-stats - refinement
+        // auto itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
+        // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+        //     // count as first-time RF
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
+        //     // count vertices
+        //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, boostPolygonR.outer().size()));
+        // } else {
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR[idR]++;
+        // }
+        // auto itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
+        // if (itS == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+        //     // count as first-time RF
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.insert(std::make_pair(idS, 1));
+        //     // count vertices
+        //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+        //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, boostPolygonS.outer().size()));
+        // } else {
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS[idS]++;
+        // }
+
+
+
         // get the mask code
 	    std::string code = createMaskCode(&boostPolygonR, &boostPolygonS);
         
@@ -594,6 +618,29 @@ namespace spatial_lib
         bg_polygon boostPolygonR = loadPolygonFromDiskBoostGeometry(idR, finR, offsetMapR);
         bg_polygon boostPolygonS = loadPolygonFromDiskBoostGeometry(idS, finS, offsetMapS);
 
+        // dev-pol-stats - refinement
+        // auto itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
+        // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+        //     // count as first-time RF
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
+        //     // count vertices
+        //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, boostPolygonR.outer().size()));
+        // } else {
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR[idR]++;
+        // }
+        // auto itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
+        // if (itS == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+        //     // count as first-time RF
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.insert(std::make_pair(idS, 1));
+        //     // count vertices
+        //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+        //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, boostPolygonS.outer().size()));
+        // } else {
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS[idS]++;
+        // }
+
+
+
         // get the mask code
 	    std::string code = createMaskCode(&boostPolygonR, &boostPolygonS);
         
@@ -626,6 +673,27 @@ namespace spatial_lib
         // load boost polygons
         bg_polygon boostPolygonR = loadPolygonFromDiskBoostGeometry(idR, finR, offsetMapR);
         bg_polygon boostPolygonS = loadPolygonFromDiskBoostGeometry(idS, finS, offsetMapS);
+
+        // dev-pol-stats - refinement
+        // auto itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
+        // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+        //     // count as first-time RF
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
+        //     // count vertices
+        //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, boostPolygonR.outer().size()));
+        // } else {
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR[idR]++;
+        // }
+        // auto itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
+        // if (itS == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+        //     // count as first-time RF
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.insert(std::make_pair(idS, 1));
+        //     // count vertices
+        //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+        //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, boostPolygonS.outer().size()));
+        // } else {
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS[idS]++;
+        // }
 
         // get the mask code
 	    std::string code = createMaskCode(&boostPolygonR, &boostPolygonS);
@@ -751,6 +819,27 @@ namespace spatial_lib
         // load boost polygons
         bg_polygon boostPolygonR = loadPolygonFromDiskBoostGeometry(idR, finR, offsetMapR);
         bg_polygon boostPolygonS = loadPolygonFromDiskBoostGeometry(idS, finS, offsetMapS);
+
+        // dev-pol-stats - refinement
+        // auto itR = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.find(idR);
+        // if (itR == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.end()) {
+        //     // count as first-time RF
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR.insert(std::make_pair(idR, 1));
+        //     // count vertices
+        //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapR.insert(std::make_pair(idR, boostPolygonR.outer().size()));
+        // } else {
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapR[idR]++;
+        // }
+        // auto itS = spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.find(idS);
+        // if (itS == spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.end()) {
+        //     // count as first-time RF
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS.insert(std::make_pair(idS, 1));
+        //     // count vertices
+        //     std::pair<uint,uint> vertexCounts = spatial_lib::getVertexCountsOfPair(idR,idS);
+        //     spatial_lib::g_queryOutput.polygonStats.polVerticesMapS.insert(std::make_pair(idS, boostPolygonS.outer().size()));
+        // } else {
+        //     spatial_lib::g_queryOutput.polygonStats.RFappearancesMapS[idS]++;
+        // }
 
         // get the mask code
 	    std::string code = createMaskCode(&boostPolygonR, &boostPolygonS);
