@@ -120,6 +120,7 @@ namespace APRIL
             // AA join to look for exact relationship between the lists
             // int AAresult = joinIntervalListsSymmetricalOptimized(aprilR->intervalsALL, aprilR->numIntervalsALL, aprilS->intervalsALL, aprilS->numIntervalsALL);
             int AAresult = vbyte_join_compressed_sorted32_symmetrical(aprilR->intervalsALLcompressed.data(), aprilR->numIntervalsALL, aprilS->intervalsALLcompressed.data(), aprilS->numIntervalsALL);
+            printf("AA: %d\n", AAresult);
             if (AAresult == spatial_lib::IL_MATCH) {
                 // refine for equal, covered by, covers and true hit intersect
                 return spatial_lib::REFINE_EQUAL_COVERS_COVEREDBY_TRUEHIT_INTERSECT;

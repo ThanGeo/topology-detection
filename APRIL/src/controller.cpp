@@ -316,6 +316,10 @@ namespace APRIL
                             //     }
                             // }
 
+                            // if(iFilterResult == spatial_lib::TR_INTERSECT){
+                            //     printf("%u,%u\n", idR, idS);
+                            // }
+
                             // if (idR == 220594 && idS == 357429) {
                             // if (idR == 206434 && idS == 9173759) {
                             //     printf("Time passed evaluating pair %u,%u: %f seconds\n", idR, idS, spatial_lib::time::getElapsedTime(temp_timer));
@@ -670,6 +674,11 @@ namespace APRIL
                     } else {
                         iFilterResult = compressed::equalMBRsAPRIL(idR, idS, aprilR, aprilS);
                     }
+
+                    // if(idR == 4320271 && idS == 5510423) {
+                    //     printf("%u,%u ifilter result: %d\n", idR, idS, iFilterResult);
+                    //     exit(0);
+                    // }
                     
                 
                     // switch based on result
@@ -790,12 +799,13 @@ namespace APRIL
                 spatial_lib::g_queryOutput.refinementTime += spatial_lib::time::getElapsedTime(spatial_lib::time::g_timer.refTimer);
                 // count the result
                 spatial_lib::countTopologyRelationResult(relation);
-                // if(relation == spatial_lib::TR_INTERSECT) {
+                // if(relation == spatial_lib::TR_EQUAL) {
                 //     printf("%u,%u\n",idR,idS);
                 // }
             }
 
             static void APRILFindRelation(uint idR, uint idS, int relationCase) {
+                
                 // use appropriate query function
                 switch (relationCase) {
                     case spatial_lib::MBR_R_IN_S:

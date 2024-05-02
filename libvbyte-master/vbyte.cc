@@ -852,10 +852,11 @@ int vbyte_join_compressed_sorted32_hybrid(const uint8_t *inA, size_t lengthA, co
   bool intersect = false;
 
   do {
+    // printf("Intervals: [%u,%u) and [%u,%u)\n", startA, endA, startB, endB);
     if(startA >= startB && endA <= endB){
       intervalRcontained = true;
       intersect = true;
-      // printf("1 contained in 2!\n");
+      
     }else if(startA<=startB && endA>startB){
       // there is an intersection
       intersect = true;
@@ -910,7 +911,7 @@ LOOK_FOR_OVERLAP:
   do {
     if (startA<=startB)
     {
-      if (endA>endB) // overlap, end1>=st2 if intervals are [s,e] and end1>st2 if intervals are [s,e)
+      if (endA>startB) // overlap, end1>=st2 if intervals are [s,e] and end1>st2 if intervals are [s,e)
       {
         //they intersect
         // return spatial_lib::IL_INTERSECT;
@@ -968,7 +969,9 @@ int vbyte_inside_join_sorted23(const uint8_t *inA, size_t lengthA, const uint8_t
 
   bool intervalRcontained = false;
 
+  // printf("Begining...\n");
   do {
+    // printf("Intervals: [%u,%u) and [%u,%u)\n", startA, endA, startB, endB);
     if(startA >= startB && endA <= endB){
       intervalRcontained = true;
     }
@@ -1017,6 +1020,7 @@ int vbyte_join_compressed_sorted32_symmetrical(const uint8_t *inA, size_t length
   if (vbyte_inside_join_sorted23(inB, lengthB, inA, lengthA)) {
     SinR = true;
   }
+  printf("RinS: %d, SinR: %d\n", RinS, SinR);
   if (RinS && SinR) {
     // if both are contained, they match
     // return spatial_lib::IL_MATCH;
