@@ -33,7 +33,9 @@ namespace APRIL
      * joins two APRIL approximations to detect true hits, true negatives and inconclusive cases for INTERSECTION.
     */
     int intersectionAPRILUncompressed(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS);
-
+    
+    /** joins two APRIL approximations to detect candidates for intersection. */
+    int candidateAPRILUncompressed(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS);
     /**
      * joins two APRIL approximations to detect true hits, true negatives and inconclusive cases for DISJOINT.
     */

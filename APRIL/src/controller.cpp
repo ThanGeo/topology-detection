@@ -1169,7 +1169,7 @@ namespace APRIL
                     
                     if (g_query->R.aprilConfig.compression == spatial_lib::C_COMPRESSION_DISABLED) {
                         // uncompressed
-                        iFilterResult = intersectionAPRILUncompressed(aprilR, aprilS);
+                        iFilterResult = candidateAPRILUncompressed(aprilR, aprilS);
                     } else {
                         // compressed  
                         iFilterResult = compressed::intersectionAPRIL(aprilR, aprilS);

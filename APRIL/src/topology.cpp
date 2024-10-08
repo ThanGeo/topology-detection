@@ -258,7 +258,7 @@ namespace APRIL
             //guaranteed not hit
             return spatial_lib::TRUE_NEGATIVE;
         }
-        //check ALL - FULL
+        // check ALL - FULL
         if(aprilS->numIntervalsFULL > 0){
             if(intersectionJoinIntervalLists(aprilR->intervalsALL, aprilR->numIntervalsALL, aprilS->intervalsFULL, aprilS->numIntervalsFULL)){
                 //hit
@@ -271,6 +271,16 @@ namespace APRIL
                 //hit
                 return spatial_lib::TRUE_HIT;
             }
+        }
+        //send to refinement
+        return spatial_lib::INCONCLUSIVE;
+    }
+
+    int candidateAPRILUncompressed(spatial_lib::AprilDataT *aprilR, spatial_lib::AprilDataT *aprilS){
+        //check ALL - ALL
+        if(!intersectionJoinIntervalLists(aprilR->intervalsALL, aprilR->numIntervalsALL, aprilS->intervalsALL, aprilS->numIntervalsALL)){
+            //guaranteed not hit
+            return spatial_lib::TRUE_NEGATIVE;
         }
         //send to refinement
         return spatial_lib::INCONCLUSIVE;
