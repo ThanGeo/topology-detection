@@ -32,7 +32,6 @@ Performs a find relation join between dataset1 and dataset2. Both keywords must 
 ```-s OP3```: it runs the 2-step pipeline with an optimized MBR filter for find relation queries.
 
 
-
 ## Build
 To manually build (not needed for tests, they build automatically), 
 run ```source ./build.sh``` in main directory or 
@@ -63,18 +62,17 @@ It will print some results because the creation of APRIL isn't decoupled from ev
 
 ### reproduce experiments
 
-#### To reproduce the numbers of Figure 8, run the following script:
+#### To reproduce the numbers of Figure 7, run the following script:
 ```
 ./find_relation.sh
 ```
-#### To run the experiment of Table 6, run the following script:
-```
-./relate.sh
-```
 
-#### To run the experiment of Figure 9, run the following script:
+#### To run the experiment of Figure 8, run the following script:
 ```
 ./scalability.sh
 ```
 
-
+#### To compare relate with find relation run:
+```
+./relate.sh
+```
