@@ -19,7 +19,6 @@ do
     pair=($i);
     echo Creating APRIL for datasets: ${pair[0]} ${pair[1]}
     ./main -q equal -c -s OP3 -R ${pair[0]} -S ${pair[1]}
-    ./main -q equal -c -z -s OP3 -R ${pair[0]} -S ${pair[1]}
 done
 
 

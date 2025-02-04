@@ -29,15 +29,19 @@ do
     pair=($i);
     echo "********" Datasets: ${pair[0]} ${pair[1]} "********"
 
-    echo "---- find relation ----"
-    echo FR-OP3:
+    echo "---- Find Relation ----"
+    echo APRIL:
+    ./main -q find_relation -s ST3 -R ${pair[0]} -S ${pair[1]}
+    echo P+C:
     ./main -q find_relation -s OP3 -R ${pair[0]} -S ${pair[1]}
 
     for j in "${relate_predicates[@]}"
     do
         relation=($j)
-        echo "----" ${relation} "----"
-        echo RE-OP3:
+        echo "----" Relate: ${relation} "----"
+        echo APRIL:
+        ./main -q ${relation} -s ST3 -R ${pair[0]} -S ${pair[1]}
+        echo P+C:
         ./main -q ${relation} -s OP3 -R ${pair[0]} -S ${pair[1]}
     done
 done
